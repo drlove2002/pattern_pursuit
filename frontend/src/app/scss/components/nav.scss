@@ -56,22 +56,22 @@ $toggleColor: var(--glass-gray-1);
         &:after {
             content: "";
             position: absolute;
-            top: #{$offset - $toggleLine / 2};
-            left: #{($toggleSize * 0.2) / 2};
+            top: calc($offset - $toggleLine / 2);
+            left: calc(($toggleSize * 0.2) / 2);
             transform: translate(0, 0);
             width: 80%;
             height: $toggleLine;
             background: $toggleColor;
             transition: transform .3s ease, box-shadow .3s ease;
-            border-radius: $toggleLine / 2;
+            border-radius: calc($toggleLine / 2);
         }
 
         &:before {
-            box-shadow: 0 #{$offset / 1.5} 0 0 $toggleColor;
+            box-shadow: 0 calc($offset / 1.5) 0 0 $toggleColor;
         }
 
         &:after {
-            box-shadow: 0 #{-$offset / 1.5} 0 0 $toggleColor;
+            box-shadow: 0 calc(-#{$offset} / 1.5) 0 0 $toggleColor;
         }
     }
 
