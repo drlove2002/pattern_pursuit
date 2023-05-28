@@ -8,3 +8,6 @@
 .env.test.local
 .env.production.local
 npm-debug.log*
+
+# Production files
+/docs

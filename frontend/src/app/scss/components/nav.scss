@@ -3,16 +3,7 @@
 $toggleSize: 40px;
 $toggleMargin: 10px;
 $toggleLine: 4px;
-$toggleColor: #ffffff;
-/* White color for the toggle */
-$glassColor: rgba(255, 255, 255, 0.1);
-/* Transparent white for the glass background */
-$itemBackgroundColor: #212121;
-/* Dark gray color for the item background */
-$itemTextColor: #ffffff;
-/* White color for the item text */
-$itemHoverBackgroundColor: #333333;
-/* Slightly darker shade for item hover effect */
+$toggleColor: var(--glass-gray-1);
 
 .nav-container {
     position: relative;
@@ -51,6 +42,10 @@ $itemHoverBackgroundColor: #333333;
         width: $toggleSize;
         height: $toggleSize;
         margin: $toggleMargin;
+        background: var(--glass-colour);
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+        border-radius: 5px;
+        backdrop-filter: blur(10px);
         z-index: 2;
 
         &:hover {
@@ -62,9 +57,9 @@ $itemHoverBackgroundColor: #333333;
             content: "";
             position: absolute;
             top: #{$offset - $toggleLine / 2};
-            left: 0;
+            left: #{($toggleSize * 0.2) / 2};
             transform: translate(0, 0);
-            width: 100%;
+            width: 80%;
             height: $toggleLine;
             background: $toggleColor;
             transition: transform .3s ease, box-shadow .3s ease;
@@ -88,32 +83,23 @@ $itemHoverBackgroundColor: #333333;
         width: 100%;
         height: 100vh;
         z-index: 1;
-        padding: 80px 20px 20px 10px;
         transition: transform .3s ease;
         transform: translateX(calc(-100% - 50px));
-        background: $glassColor;
-        display: grid;
-        grid-template-columns: 1fr;
-        grid-gap: 5px 0;
+        background: var(--glass-colour);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 5px 0;
         align-content: start;
         backdrop-filter: blur(10px);
         border-radius: 10px;
         box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
 
-        .nav-item {
-            background: $itemBackgroundColor;
-            padding: 10px;
-            transition: background-color .3s ease;
-            border-radius: 5px;
-
-            &:hover {
-                cursor: pointer;
-                background: $itemHoverBackgroundColor;
-            }
-
-            .nav-item-content {
-                color: $itemTextColor;
-            }
+        .btn-container {
+            display: flex;
+            flex-direction: column;
+            gap: 5px 0;
+            padding: 20px;
         }
     }
 
@@ -131,6 +117,39 @@ $itemHoverBackgroundColor: #333333;
             position: fixed;
             width: auto;
             transform: none;
+        }
+    }
+
+    .profile-container {
+        margin-top: 55px;
+        display: flex;
+        flex-direction: row;
+        gap: 0 10px;
+        background: var(--glass-colour);
+        backdrop-filter: blur(10px);
+
+        .user {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .info {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+
+            .username {
+                font-size: 15px;
+                font-weight: 600;
+            }
+
+            .email {
+                font-size: 10px;
+                font-weight: 400;
+            }
         }
     }
 }

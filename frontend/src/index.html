@@ -25,12 +25,36 @@
             <source src="assets/roulette.mp4" type="video/mp4">
         </video>
     </div>
-    <div class="nav-container" tabindex="0">
+    <div class="nav-container is-active" tabindex="0">
         <div class="nav-toggle"></div>
         <nav class="nav-items">
-            <a class="nav-item" href="#">Help</a>
-            <a class="nav-item" href="#">Single Player</a>
-            <a class="nav-item" href="#">Multi Player</a>
+            <div class="profile-container">
+                <img src="https://cdn-icons-png.flaticon.com/512/953/953789.png" class="user">
+                <div class="info">
+                    <span class="username">User Name</span>
+                    <span class="email">email@email.com</span>
+                </div>
+            </div>
+            <div class="btn-container">
+                <button type="button" class="button">
+                    <span class="button__icon">
+                        <ion-icon name="help-circle"></ion-icon>
+                    </span>
+                    <span class="button__text">Help</span>
+                </button>
+                <button type="button" class="button">
+                    <span class="button__icon">
+                        <ion-icon name="log-in"></ion-icon>
+                    </span>
+                    <span class="button__text">Sign In</span>
+                </button>
+                <button type="button" class="button">
+                    <span class="button__icon">
+                        <ion-icon name="shapes"></ion-icon>
+                    </span>
+                    <span class="button__text">Multiplayer</span>
+                </button>
+            </div>
         </nav>
     </div>
 
@@ -46,6 +70,7 @@
         </div>
     </div>
     <!-- Scripts -->
+    <script src="https://unpkg.com/ionicons@5.4.0/dist/ionicons.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.slim.min.js"
         integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI=" crossorigin="anonymous"></script>
 </body>
