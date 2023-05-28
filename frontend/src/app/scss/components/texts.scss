@@ -1,0 +1,40 @@
+#big-text {
+    position: relative;
+    text-align: center;
+    font-size: 5rem;
+    color: white;
+    margin-top: 40vh;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    opacity: 0;
+}
+
+.text-animate {
+    animation: 2s cubic-bezier(0.05, 0.82, 0.56, 0.74) 0s 1 slideInFromBottom;
+}
+
+@keyframes slideInFromBottom {
+
+    // Transform from off the bottom
+    0% {
+        transform: translateY(200%);
+    }
+
+    100% {
+        transform: translateY(0);
+    }
+}
+
+/* Styling for the rules section */
+#rules {
+    margin: 0 auto;
+
+    h2 {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+    }
+
+    p {
+        font-size: 1.5rem;
+        margin-bottom: 2rem;
+    }
+}

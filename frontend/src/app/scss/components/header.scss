@@ -1,0 +1,82 @@
+@use "../utils" as *;
+
+header {
+  height: rem(160);
+  #bg-box {
+    background-image: url("../assets/images/bidhan_front.webp");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+
+    filter: blur(10px);
+    height: inherit;
+  }
+  #text-box {
+    background-color: rgb(0, 0, 0); /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.4);
+    color: var(--cream-white);
+    border: 2px solid var(--cream-white);
+    font-weight: bold;
+
+    position: absolute;
+    z-index: 1;
+    top: 1%;
+
+    width: 100%;
+    display: grid;
+    grid-template-columns: 20% 80%;
+    column-gap: rem(40);
+
+    h1 {
+      font-size: rem(55);
+    }
+    h1,
+    #name_footer {
+      justify-self: start;
+    }
+    img,
+    #icon_footer {
+      justify-self: end;
+    }
+    #icon_footer {
+      padding-right: 10px;
+    }
+    @include breakpoint-down(medium) {
+      column-gap: rem(10);
+      grid-template-columns: 15% 85%;
+      h1 {
+        font-size: rem(40);
+      }
+      #icon_footer,
+      #name_footer {
+        display: none;
+      }
+      h1,
+      #name_footer,
+      img,
+      #icon_footer {
+        justify-self: center;
+      }
+    }
+
+    @include breakpoint-down(small) {
+      display: inherit;
+      h1 {
+        font-size: rem(30);
+      }
+      img {
+        display: none;
+      }
+    }
+  }
+  @include breakpoint-down(small) {
+    #text-box > h1 {
+      font-size: rem(25);
+      text-align: center;
+    }
+
+    & {
+      height: rem(70);
+    }
+  }
+}

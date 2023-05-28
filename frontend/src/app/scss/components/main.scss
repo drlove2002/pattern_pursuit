@@ -1,0 +1,7 @@
+@use "../utils/breakpoints" as *;
+
+@include breakpoint(medium) {
+    .content {
+        margin-left: 200px;
+    }
+}

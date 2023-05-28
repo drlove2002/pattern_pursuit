@@ -1,0 +1,37 @@
+{
+  "name": "college_website",
+  "version": "0.1.0",
+  "description": "Bidhan Chandra College website",
+  "main": "docs/index.html",
+  "author": "Sudip Roy",
+  "scripts": {
+    "build:sass": "sass  --no-source-map src/app/scss:docs/css --style compressed",
+    "build:js": "node scripts/mterser.js",
+    "copy:assets": "copyfiles -u 1 ./src/assets/**/* docs",
+    "copy:html": "copyfiles -u 1 ./src/*.html docs",
+    "copy": "npm-run-all --parallel copy:*",
+    "watch:assets": "onchange \"./src/assets/**/*\" -- npm run copy:assets",
+    "watch:js": "onchange \"./src/app/js/**/*\" -- npm run build:js",
+    "watch:html": "onchange \"src/*.html\" -- npm run copy:html",
+    "watch:sass": "sass  --no-source-map --watch src/app/scss:docs/css --style compressed",
+    "watch": "npm-run-all --parallel watch:*",
+    "serve": "browser-sync start --server docs --files docs",
+    "start": "npm-run-all copy --parallel watch serve",
+    "build": "npm-run-all copy:html copy:assets build:*",
+    "postbuild": "postcss docs/css/*.css -u autoprefixer cssnano -r --no-map"
+  },
+  "dependencies": {
+    "autoprefixer": "^10.4.2",
+    "browser-sync": "^2.27.7",
+    "copyfiles": "^2.4.1",
+    "cssnano": "^5.0.17",
+    "npm-run-all": "^4.1.5",
+    "onchange": "^7.1.0",
+    "postcss-cli": "^9.1.0",
+    "sass": "^1.49.8",
+    "terser": "^5.12.1"
+  },
+  "devDependencies": {
+    "glob": "^7.2.0"
+  }
+}

@@ -1,0 +1,136 @@
+@use "../utils/breakpoints" as *;
+
+$toggleSize: 40px;
+$toggleMargin: 10px;
+$toggleLine: 4px;
+$toggleColor: #ffffff;
+/* White color for the toggle */
+$glassColor: rgba(255, 255, 255, 0.1);
+/* Transparent white for the glass background */
+$itemBackgroundColor: #212121;
+/* Dark gray color for the item background */
+$itemTextColor: #ffffff;
+/* White color for the item text */
+$itemHoverBackgroundColor: #333333;
+/* Slightly darker shade for item hover effect */
+
+.nav-container {
+    position: relative;
+    display: inline-block;
+    max-width: $toggleSize + $toggleMargin;
+    max-height: $toggleSize + $toggleMargin;
+    overflow: visible;
+    outline: none;
+
+    &.is-active {
+        .nav-toggle {
+
+            &:before,
+            &:after {
+                box-shadow: none;
+            }
+
+            &:before {
+                transform: rotate(-45deg);
+            }
+
+            &:after {
+                transform: rotate(45deg);
+            }
+        }
+
+        .nav-items {
+            transform: translate(0, 0);
+        }
+    }
+
+    .nav-toggle {
+        $offset: $toggleSize * 0.5;
+
+        position: relative;
+        width: $toggleSize;
+        height: $toggleSize;
+        margin: $toggleMargin;
+        z-index: 2;
+
+        &:hover {
+            cursor: pointer;
+        }
+
+        &:before,
+        &:after {
+            content: "";
+            position: absolute;
+            top: #{$offset - $toggleLine / 2};
+            left: 0;
+            transform: translate(0, 0);
+            width: 100%;
+            height: $toggleLine;
+            background: $toggleColor;
+            transition: transform .3s ease, box-shadow .3s ease;
+            border-radius: $toggleLine / 2;
+        }
+
+        &:before {
+            box-shadow: 0 #{$offset / 1.5} 0 0 $toggleColor;
+        }
+
+        &:after {
+            box-shadow: 0 #{-$offset / 1.5} 0 0 $toggleColor;
+        }
+    }
+
+    .nav-items {
+        position: absolute;
+        top: 0;
+        left: 0;
+        min-width: 200px;
+        width: 100%;
+        height: 100vh;
+        z-index: 1;
+        padding: 80px 20px 20px 10px;
+        transition: transform .3s ease;
+        transform: translateX(calc(-100% - 50px));
+        background: $glassColor;
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-gap: 5px 0;
+        align-content: start;
+        backdrop-filter: blur(10px);
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+
+        .nav-item {
+            background: $itemBackgroundColor;
+            padding: 10px;
+            transition: background-color .3s ease;
+            border-radius: 5px;
+
+            &:hover {
+                cursor: pointer;
+                background: $itemHoverBackgroundColor;
+            }
+
+            .nav-item-content {
+                color: $itemTextColor;
+            }
+        }
+    }
+
+    @include breakpoint(medium) {
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        flex-wrap: wrap;
+
+        .nav-toggle {
+            display: none;
+        }
+
+        .nav-items {
+            position: fixed;
+            width: auto;
+            transform: none;
+        }
+    }
+}
