@@ -16,38 +16,42 @@
         cursor: pointer;
         background: rgba(255, 255, 255, 0.432);
     }
-}
 
-.button:active {
-    background: rgba(255, 255, 255, 0.432);
-}
+    &:active {
+        background: rgba(255, 255, 255, 0.432);
+    }
 
-.button__text {
-    display: block;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    display: -webkit-flex;
-    -webkit-align-items: center;
-    align-items: center;
-    position: relative;
-    font-size: rem(13.5);
-    line-height: 1;
-    filter: drop-shadow(3px 2px 5px rgba(0, 0, 0, 0.5));
-}
+    &__text {
+        display: block;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        display: -webkit-flex;
+        -webkit-align-items: center;
+        align-items: center;
+        position: relative;
+        font-size: rem(13.5);
+        line-height: 1;
+        filter: drop-shadow(3px 2px 5px rgba(0, 0, 0, 0.5));
 
-.button__icon {
-    font-size: 22px;
-    margin-inline-end: 10px;
-    width: 20px;
-    height: 20px;
-    line-height: 20px;
-    border-radius: 2px;
-    text-align: center;
-    filter: drop-shadow(3px 2px 5px rgba(0, 0, 0, 0.5));
-}
 
-.button__icon,
-.button__text {
-    color: var(--glass-gray-2);
+    }
+
+    &__icon {
+        font-size: 22px;
+        margin-inline-end: 10px;
+        width: 20px;
+        height: 20px;
+        line-height: 20px;
+        border-radius: 2px;
+        text-align: center;
+        filter: drop-shadow(3px 2px 5px rgba(0, 0, 0, 0.5));
+
+
+    }
+
+    &__icon,
+    &__text {
+        color: var(--glass-gray-2);
+    }
 }

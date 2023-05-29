@@ -11,6 +11,46 @@ $(window).on("load", function () {
 });
 
 
+function setProfile() {
+    // Get profile data from /api/users/me
+    $.ajax({
+        url: "/api/users/me",
+        type: "GET",
+        headers: {}
+    }).done(function (data) {
+        data = data.data;
+        // Set profile data
+        $("#profile-picture").attr("src", data.photo);
+        $("#profile-name").html(data.name);
+        $("#profile-email").html(data.email);
+
+        // Make sign-in button to sign-out button
+        const login = $("#login");
+        login.attr("id", "logout");
+        login.find(".button__text").html("Sign out");
+    });
+}
+
+function unsetProfile() {  // TODO: Fix this
+    $.ajax({
+        url: "/api/oauth/logout",
+        type: "GET",
+        headers: {}
+    }).done(function (data) {
+        data = data.data;
+        // Set profile data
+        $("#profile-picture").attr("src", data.photo);
+        $("#profile-name").html(data.name);
+        $("#profile-email").html(data.email);
+
+        // Make sign-in button to sign-out button
+        const login = $("#login");
+        login.attr("id", "logout");
+        login.find(".button__text").html("Sign out");
+    });
+}
+
+
 $(document).ready(function () {
 
     const nav = $(".nav-container");
@@ -53,8 +93,10 @@ $(document).ready(function () {
                 'incorrectly, you will earn $100 and the bot will lose $100. The challenge is to outsmart the' +
                 'computer by being as random as possible to earn more money. Have fun and good luck!</p>' +
                 '</div>';
+        else if (buttonId == "login")
+            var popupContent = '<div id="g_id_signin"></div>';
         else
-            var popupContent = "";
+            var popupContent = "<h1>Coming soon...</h1>";
 
         popup.addClass("is-active");
         popup.find(".popup-content").html(popupContent);
@@ -77,6 +119,12 @@ $(document).ready(function () {
         nav.removeClass("disable-interaction");
         $(".content").removeClass("disable-interaction");
     });
+
+    //  Update the profile picture and name when user logged in
+    // Chech if we have token in cache
+    if (Cookies.get("login")) {
+        setProfile();
+    }
 
 });
 

@@ -11,7 +11,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Martel+Sans:wght@300;400;700&display=swap" rel="stylesheet">
 
-    <link rel="shortcut icon" href="assets/images/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="assets/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="css/style.css">
     <script defer src="js/script.js"></script>
     <script src="https://kit.fontawesome.com/9f8178a40f.js" crossorigin="anonymous"></script>
@@ -29,10 +29,10 @@
         <div class="nav-toggle"></div>
         <nav class="nav-items">
             <div class="profile-container">
-                <img src="https://cdn-icons-png.flaticon.com/512/953/953789.png" class="user">
+                <img src="https://cdn-icons-png.flaticon.com/512/953/953789.png" id="profile-picture">
                 <div class="info">
-                    <span class="username">User Name</span>
-                    <span class="email">email@email.com</span>
+                    <span id="profile-name">User Name</span>
+                    <span id="profile-email">email@email.com</span>
                 </div>
             </div>
             <div class="btn-container">
@@ -47,6 +47,12 @@
                         <ion-icon name="log-in"></ion-icon>
                     </span>
                     <span class="button__text">Sign In</span>
+                    <!-- TODO: 
+                        - Icon for signout
+                        - Remove cookie if user request fail.
+                        - Make this button a link to login page. 
+                        - Focus on login button for new users.
+                    -->
                 </button>
                 <button type="button" id="multi" class="button">
                     <span class="button__icon">
@@ -65,9 +71,10 @@
         <h1 id="big-text">Game of Randomness</h1>
     </div>
     <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"
+        integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
     <script type="module" src="https://unpkg.com/ionicons@5.0.0/dist/ionicons/ionicons.esm.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.slim.min.js"
-        integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI=" crossorigin="anonymous"></script>
 </body>
 
 </html>

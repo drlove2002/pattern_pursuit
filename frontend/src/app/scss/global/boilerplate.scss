@@ -77,18 +77,17 @@ select {
 
 body {
   padding: 0;
-  // overflow: hidden;
   font-family: var(--font-martel);
-  background-color: darkblue;
 }
 
 #video-background {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+
   video {
     width: 100%;
     height: 100%;
@@ -96,20 +95,40 @@ body {
   }
 }
 
-section {
-  padding: 8em;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+@media (min-aspect-ratio: 16/9) {
+  video {
+    width: 100%;
+    height: auto;
+  }
 }
 
+@media (max-aspect-ratio: 16/9) {
+  video {
+    width: auto;
+    height: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  video {
+    display: none;
+  }
+
+  body {
+    background: url(../../../assets/snapshot.png);
+    background-size: cover;
+  }
+}
 
 .disable-select {
-  user-select: none; /* supported by Chrome and Opera */
- -webkit-user-select: none; /* Safari */
- -khtml-user-select: none; /* Konqueror HTML */
- -moz-user-select: none; /* Firefox */
- -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none;
+  /* supported by Chrome and Opera */
+  -webkit-user-select: none;
+  /* Safari */
+  -khtml-user-select: none;
+  /* Konqueror HTML */
+  -moz-user-select: none;
+  /* Firefox */
+  -ms-user-select: none;
+  /* Internet Explorer/Edge */
 }
