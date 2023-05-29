@@ -1,3 +1,4 @@
+use actix_files::Files as fs;
 use actix_web::middleware::Logger;
 use actix_web::{get, App, HttpServer};
 use actix_web::{HttpResponse, Responder};
@@ -21,6 +22,7 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(move || {
         App::new()
             .service(health_checker_handler)
+            .service(fs::new("/", "../frontend/static").index_file("index.html"))
             .wrap(Logger::default())
     })
     .bind(("127.0.0.1", 8000))?
