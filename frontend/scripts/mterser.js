@@ -1,9 +1,9 @@
 const { readdirSync, mkdirSync } = require("fs");
 const { exec } = require("child_process");
-const targetFolder = "./docs/js";
+const targetFolder = "./static/js";
 
 // Check if the target folder exists, create it if not
-if (!readdirSync("./docs").includes("js")) {
+if (!readdirSync("./static").includes("js")) {
   mkdirSync(targetFolder);
 }
 
