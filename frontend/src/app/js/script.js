@@ -50,10 +50,21 @@ function unsetProfile() {  // TODO: Fix this
     });
 }
 
+const popup = $("#popup-window");
+const nav = $(".nav-container");
+
+function openPopup(popupContent) {
+    popup.addClass("is-active");
+    popup.find(".popup-content").html(popupContent);
+
+    // Stop interactivity with the background when popup is open, only allow to close popup
+    nav.addClass("disable-interaction");
+    $(".content").addClass("disable-interaction");
+}
+
 
 $(document).ready(function () {
 
-    const nav = $(".nav-container");
 
     if (nav.length) {
         const toggle = nav.find(".nav-toggle");
@@ -73,8 +84,23 @@ $(document).ready(function () {
         }
     }
 
-    // Pop up window
-    const popup = $("#popup-window");
+    // If user is not logged in, show login button in popup
+    if (!Cookies.get("login") || Cookies.get("login") == "false") {
+        console.log("Not logged in");
+        var popupContent =
+            '<h2>Before continuing you must login.</h2>' +
+            '<div class="google-btn">' +
+            '<a href="/api/login">' +
+            '<div class="google-icon-wrapper">' +
+            '<img class="google-icon" src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" />' +
+            '</div>' +
+            '<p class="btn-text"><b>Sign in with google</b></p>' +
+            '</a>' +
+            '</div>';
+        popup.find(".popup-close").hide();
+        openPopup(popupContent);
+    }
+
 
     // Make a function to open popup window with contains
     $(".button").on('click', (e) => {
@@ -98,12 +124,8 @@ $(document).ready(function () {
         else
             var popupContent = "<h1>Coming soon...</h1>";
 
-        popup.addClass("is-active");
-        popup.find(".popup-content").html(popupContent);
+        openPopup(popupContent);
 
-        // Stop interactivity with the background when popup is open, only allow to close popup
-        nav.addClass("disable-interaction");
-        $(".content").addClass("disable-interaction");
     });
 
     // Make a function to close popup window

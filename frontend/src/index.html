@@ -29,7 +29,8 @@
         <div class="nav-toggle"></div>
         <nav class="nav-items">
             <div class="profile-container">
-                <img src="https://cdn-icons-png.flaticon.com/512/953/953789.png" id="profile-picture">
+                <img src="https://cdn-icons-png.flaticon.com/512/953/953789.png" alt="profile-pic"
+                    referrerpolicy="no-referrer" id="profile-picture">
                 <div class="info">
                     <span id="profile-name">User Name</span>
                     <span id="profile-email">email@email.com</span>
@@ -42,18 +43,18 @@
                     </span>
                     <span class="button__text">Help</span>
                 </button>
-                <button type="button" id="login" class="button">
+                <a href="/api/oauth/logout" id="logout" class="button">
                     <span class="button__icon">
-                        <ion-icon name="log-in"></ion-icon>
+                        <ion-icon name="log-out"></ion-icon>
                     </span>
-                    <span class="button__text">Sign In</span>
+                    <span class="button__text">Sign Out</span>
                     <!-- TODO: 
                         - Icon for signout
                         - Remove cookie if user request fail.
                         - Make this button a link to login page. 
                         - Focus on login button for new users.
                     -->
-                </button>
+                </a>
                 <button type="button" id="multi" class="button">
                     <span class="button__icon">
                         <ion-icon name="shapes"></ion-icon>
