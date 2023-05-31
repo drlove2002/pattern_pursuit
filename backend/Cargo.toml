@@ -1,7 +1,8 @@
 [package]
-name = "heads_or_tails_pro"
+name = "pattern_pursuit"
 version = "0.1.0"
 edition = "2021"
+description="Unraveling Human Predictability"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
