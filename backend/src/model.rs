@@ -1,4 +1,3 @@
-use chrono::prelude::*;
 use serde::{Deserialize, Serialize};
 use std::sync::{Arc, Mutex};
 
@@ -7,12 +6,10 @@ use crate::config;
 #[allow(non_snake_case)]
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct User {
-    pub id: Option<String>,
+    pub id: String,
     pub name: String,
     pub email: String,
     pub photo: String,
-    pub createdAt: Option<DateTime<Utc>>,
-    pub updatedAt: Option<DateTime<Utc>>,
 }
 
 pub struct AppState {

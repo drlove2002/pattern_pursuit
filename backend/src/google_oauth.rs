@@ -9,6 +9,7 @@ use crate::model::AppState;
 pub struct OAuthResponse {
     pub access_token: String,
     pub id_token: String,
+    pub refresh_token: String,
 }
 
 #[derive(Deserialize)]
