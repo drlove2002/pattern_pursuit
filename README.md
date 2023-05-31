@@ -1,4 +1,6 @@
-# HeadsOrTailsPro
+# Pattern Pursuit
+Unraveling Human Predictability
+
 To start auto compiling of js, scss and html files run:
 ```bash
 npm run watch
