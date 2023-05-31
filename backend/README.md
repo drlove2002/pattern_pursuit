@@ -3,7 +3,6 @@
 ## Dectription
 
 ## TODOs
-- Add css compiler to webpack
 - Remove unused dependency from package.json
 - Add github actions
 - Add docker

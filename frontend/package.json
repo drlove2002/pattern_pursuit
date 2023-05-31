@@ -1,11 +1,12 @@
 {
-  "name": "college_website",
+  "name": "pattern_pursuit",
   "version": "0.1.0",
-  "description": "Bidhan Chandra College website",
+  "description": "Unraveling Human Predictability",
   "main": "static/index.html",
   "author": "Sudip Roy",
   "scripts": {
-    "build:sass": "sass  --no-source-map src/app/scss:static/css --style compressed",
+    "build:sass": "sass  --no-source-map src/app/scss/style.scss:static/css/style.css --style compressed",
+    "build:css": "postcss static/css/*.css -u autoprefixer cssnano -r --no-map",
     "build:js": "npx webpack",
     "copy:assets": "copyfiles -u 1 ./src/assets/**/* static",
     "copy:html": "copyfiles -u 1 ./src/*.html static",
@@ -14,11 +15,10 @@
     "watch:js": "onchange \"./src/app/js/**/*\" -- npm run build:js",
     "watch:html": "onchange \"src/*.html\" -- npm run copy:html",
     "watch:sass": "sass  --no-source-map --watch src/app/scss:static/css --style compressed",
-    "watch": "npm-run-all --parallel watch:*",
+    "watch": "npm-run-all build --parallel watch:*",
     "serve": "browser-sync start --server static --files static",
     "start": "npm-run-all copy --parallel watch serve",
-    "build": "npm-run-all copy:html copy:assets build:*",
-    "postbuild": "postcss static/css/*.css -u autoprefixer cssnano -r --no-map"
+    "build": "npm-run-all copy:html copy:assets build:*"
   },
   "dependencies": {
     "autoprefixer": "^10.4.2",
@@ -30,19 +30,11 @@
     "npm-run-all": "^4.1.5",
     "onchange": "^7.1.0",
     "postcss-cli": "^9.1.0",
-    "sass": "^1.49.8",
-    "terser": "^5.12.1"
+    "sass": "^1.49.8"
   },
   "devDependencies": {
-    "@babel/cli": "^7.21.5",
-    "@babel/core": "^7.22.1",
-    "@babel/preset-env": "^7.22.4",
-    "@babel/preset-typescript": "^7.21.5",
     "@types/jquery": "^3.5.16",
     "@types/js-cookie": "^3.0.3",
-    "babel-cli": "^6.26.0",
-    "babel-loader": "^9.1.2",
-    "glob": "^7.2.0",
     "terser-webpack-plugin": "^5.3.9",
     "ts-loader": "^9.4.3",
     "typescript": "^5.0.4",

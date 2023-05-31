@@ -1,12 +1,5 @@
 const path = require('path');
-const { readdirSync, mkdirSync } = require("fs");
 const TerserPlugin = require('terser-webpack-plugin');
-const targetFolder = "./static/js";
-
-// Check if the target folder exists, create it if not
-if (!readdirSync("./static").includes("js")) {
-    mkdirSync(targetFolder);
-}
 
 module.exports = {
     entry: './src/app/js/script.ts',
@@ -20,7 +13,10 @@ module.exports = {
                 test: /\.(js|ts)$/,
                 exclude: /node_modules/,
                 use: {
-                    loader: 'babel-loader',
+                    loader: 'ts-loader',
+                    options: {
+                        transpileOnly: true,
+                    },
                 },
             },
         ],
@@ -44,4 +40,4 @@ module.exports = {
             }),
         ],
     },
-};
+};    
