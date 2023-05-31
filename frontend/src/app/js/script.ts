@@ -54,7 +54,6 @@ function openPopup(popupContent) {
 
 
 $(function () {
-    setupRefreshTimer();
     if (nav.length) {
         const toggle = nav.find(".nav-toggle");
 
@@ -75,13 +74,12 @@ $(function () {
 
     // If user is not logged in, show login button in popup
     if (!Cookies.get("login") || Cookies.get("login") == "false") {
-        console.log("Not logged in");
         var popupContent =
             '<h2>Before continuing you must login.</h2>' +
             '<div class="google-btn">' +
             '<a href="/api/login">' +
             '<div class="google-icon-wrapper">' +
-            '<img class="google-icon" src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" />' +
+            '<img class="google-icon" src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="google icon"/>' +
             '</div>' +
             '<p class="btn-text"><b>Sign in with google</b></p>' +
             '</a>' +
@@ -133,6 +131,7 @@ $(function () {
     // Chech if we have token in cache
     if (Cookies.get("login")) {
         setProfile();
+        setupRefreshTimer();
     }
 
 });
