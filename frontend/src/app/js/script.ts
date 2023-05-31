@@ -1,3 +1,7 @@
+import $ from 'jquery';
+import Cookies from 'js-cookie';
+import { setupRefreshTimer } from './task';
+
 // Get id big-text
 var bt = $("#big-text");
 // on load function 
@@ -28,26 +32,12 @@ function setProfile() {
         const login = $("#login");
         login.attr("id", "logout");
         login.find(".button__text").html("Sign out");
-    });
-}
-
-function unsetProfile() {  // TODO: Fix this
-    $.ajax({
-        url: "/api/oauth/logout",
-        type: "GET",
-        headers: {}
-    }).done(function (data) {
-        data = data.data;
-        // Set profile data
-        $("#profile-picture").attr("src", data.photo);
-        $("#profile-name").html(data.name);
-        $("#profile-email").html(data.email);
-
-        // Make sign-in button to sign-out button
-        const login = $("#login");
-        login.attr("id", "logout");
-        login.find(".button__text").html("Sign out");
-    });
+    }).fail(function (data) {
+        // If fail, remove cookie
+        Cookies.remove("login");
+        Cookies.remove("token");
+        location.reload();
+    })
 }
 
 const popup = $("#popup-window");
@@ -63,9 +53,8 @@ function openPopup(popupContent) {
 }
 
 
-$(document).ready(function () {
-
-
+$(function () {
+    setupRefreshTimer();
     if (nav.length) {
         const toggle = nav.find(".nav-toggle");
 
@@ -113,14 +102,12 @@ $(document).ready(function () {
             var popupContent =
                 '<div id="rules">' +
                 '<h2>How to play?</h1>' +
-                '<p>Welcome to "Guess the Coin Toss"! In this game, you will be prompted to choose between' +
-                '"heads" or "tails". The bot will then attempt to guess your choice before it is revealed. If' +
-                'the bot guesses correctly, you will lose $100 and the bot will earn $100. If the bot guesses' +
-                'incorrectly, you will earn $100 and the bot will lose $100. The challenge is to outsmart the' +
-                'computer by being as random as possible to earn more money. Have fun and good luck!</p>' +
+                '<p>you\'ll be presented with a choice between "heads" or "tails". ' +
+                'My task is to guess your selection before it\'s revealed. If I guess right,' +
+                ' you lose $100 while I earn $100. But if I guess wrong, you\'ll earn $100 while I lose $100.' +
+                ' The key is to outsmart me by being as random as possible, which will help you earn more money.' +
+                ' Are you up for the challenge? Let the game begin, and may luck be on your side!</p>' +
                 '</div>';
-        else if (buttonId == "login")
-            var popupContent = '<div id="g_id_signin"></div>';
         else
             var popupContent = "<h1>Coming soon...</h1>";
 

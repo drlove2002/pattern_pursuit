@@ -1,0 +1,20 @@
+{
+    "compilerOptions": {
+        "target": "es5",
+        "module": "esnext",
+        "moduleResolution": "node",
+        "allowJs": true,
+        "checkJs": true,
+        "sourceMap": false,
+        "outDir": "static/js",
+        "esModuleInterop": true,
+        "forceConsistentCasingInFileNames": true,
+        "declaration": true,
+    },
+    "include": [
+        "src/app/js/**/*"
+    ],
+    "exclude": [
+        "node_modules"
+    ]
+}
