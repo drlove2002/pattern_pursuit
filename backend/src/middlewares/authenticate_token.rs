@@ -5,8 +5,7 @@ use actix_web::{
     error::{Error as ActixWebError, ErrorUnauthorized},
     http, web, FromRequest, HttpRequest,
 };
-use chrono::{Duration, Utc};
-use jsonwebtoken::{decode, encode, Algorithm, DecodingKey, EncodingKey, Header, Validation};
+use jsonwebtoken::{decode, Algorithm, DecodingKey, Validation};
 use serde_json::json;
 
 use crate::model::{AppState, TokenClaims};
@@ -37,7 +36,7 @@ impl FromRequest for AuthenticationGuard {
 
         let data = req.app_data::<web::Data<AppState>>().unwrap();
 
-        let jwt_secret = data.env.jwt_secret.to_owned();
+        let jwt_secret = data.conf.jwt_secret.to_owned();
         let decode = decode::<TokenClaims>(
             token.unwrap().as_str(),
             &DecodingKey::from_secret(jwt_secret.as_ref()),
@@ -64,22 +63,4 @@ impl FromRequest for AuthenticationGuard {
             ))),
         }
     }
-}
-
-/// Generate a JWT token for the user
-pub fn gen_jwt_token(user_id: String, data: &web::Data<AppState>) -> String {
-    let jwt_secret = &data.env.jwt_secret;
-    let now = Utc::now();
-    let claims: TokenClaims = TokenClaims {
-        sub: user_id,
-        exp: (now + Duration::minutes(data.env.jwt_max_age)).timestamp() as usize,
-        iat: now.timestamp() as usize,
-    };
-
-    encode(
-        &Header::default(),
-        &claims,
-        &EncodingKey::from_secret(jwt_secret.as_ref()),
-    )
-    .unwrap()
 }

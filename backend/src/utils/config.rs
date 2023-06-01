@@ -1,5 +1,5 @@
 #[derive(Debug, Clone)]
-pub struct Config {
+pub struct AppConfig {
     pub client_origin: String,
     pub jwt_secret: String,
     pub jwt_expires_in: String,
@@ -9,8 +9,8 @@ pub struct Config {
     pub google_oauth_redirect_url: String,
 }
 
-impl Config {
-    pub fn init() -> Config {
+impl AppConfig {
+    pub fn init() -> AppConfig {
         let client_origin = std::env::var("CLIENT_ORIGIN").expect("CLIENT_ORIGIN must be set");
         let jwt_secret = std::env::var("JWT_SECRET").expect("JWT_SECRET must be set");
         let jwt_expires_in =
@@ -23,7 +23,7 @@ impl Config {
         let google_oauth_redirect_url = std::env::var("GOOGLE_OAUTH_REDIRECT_URL")
             .expect("GOOGLE_OAUTH_REDIRECT_URL must be set");
 
-        Config {
+        AppConfig {
             client_origin,
             jwt_secret,
             jwt_expires_in,

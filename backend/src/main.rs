@@ -1,8 +1,7 @@
-mod authenticate_token;
-mod config;
-mod google_oauth;
 mod handler;
+mod middlewares;
 mod model;
+mod utils;
 
 use actix_cors::Cors;
 use actix_files::Files as fs;
@@ -10,6 +9,7 @@ use actix_web::middleware::Logger;
 use actix_web::{http::header, web, App, HttpServer};
 use dotenv::dotenv;
 use model::AppState;
+use slog::info;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -19,14 +19,13 @@ async fn main() -> std::io::Result<()> {
     dotenv().ok();
     env_logger::init();
 
-    let db = AppState::init();
-    let app_data = web::Data::new(db);
+    let app_data = web::Data::new(AppState::init());
 
-    println!("🚀 Server started successfully");
+    info!(app_data.log, "🚀 Server started successfully");
 
     HttpServer::new(move || {
         let cors = Cors::default()
-            .allowed_origin(&app_data.env.client_origin)
+            .allowed_origin(&app_data.conf.client_origin)
             .allowed_methods(vec!["GET", "POST"])
             .allowed_headers(vec![
                 header::CONTENT_TYPE,

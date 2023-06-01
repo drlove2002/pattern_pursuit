@@ -1,7 +1,10 @@
 use crate::{
-    authenticate_token::{gen_jwt_token, AuthenticationGuard},
-    google_oauth::{get_google_user, request_token},
+    middlewares::authenticate_token::AuthenticationGuard,
     model::{AppState, QueryCode, User, UserResponse},
+    utils::{
+        gen_jwt_token,
+        google_oauth::{get_google_user, request_token},
+    },
 };
 use actix_web::{
     cookie::{time::Duration as ActixWebDuration, Cookie},
@@ -21,8 +24,8 @@ async fn oauth_url_handler(data: web::Data<AppState>) -> impl Responder {
     let mut url = Url::parse("https://accounts.google.com/o/oauth2/v2/auth").unwrap();
 
     url.query_pairs_mut()
-        .append_pair("client_id", &data.env.google_oauth_client_id)
-        .append_pair("redirect_uri", &data.env.google_oauth_redirect_url)
+        .append_pair("client_id", &data.conf.google_oauth_client_id)
+        .append_pair("redirect_uri", &data.conf.google_oauth_redirect_url)
         .append_pair("response_type", "code")
         .append_pair("scope", "email profile")
         .append_pair("state", "random_string")
@@ -42,12 +45,12 @@ async fn token_refresh_handler(
     let token: String = gen_jwt_token(auth_guard.user_id, &data);
     let cookie = Cookie::build("token", token)
         .path("/")
-        .max_age(ActixWebDuration::new(60 * data.env.jwt_max_age, 0))
+        .max_age(ActixWebDuration::new(60 * data.conf.jwt_max_age, 0))
         .http_only(true)
         .finish();
     let cookie2 = Cookie::build("login", "true")
         .path("/")
-        .max_age(ActixWebDuration::new(60 * data.env.jwt_max_age, 0))
+        .max_age(ActixWebDuration::new(60 * data.conf.jwt_max_age, 0))
         .http_only(false)
         .finish();
 
@@ -78,7 +81,12 @@ async fn google_oauth_handler(
     }
 
     let token_response = token_response.unwrap();
-    let google_user = get_google_user(&token_response.access_token, &token_response.id_token).await;
+    let google_user = get_google_user(
+        &token_response.access_token,
+        &token_response.id_token,
+        &data,
+    )
+    .await;
     if google_user.is_err() {
         let message = google_user.err().unwrap().to_string();
         return HttpResponse::BadGateway()
@@ -110,16 +118,16 @@ async fn google_oauth_handler(
     let token: String = gen_jwt_token(google_user.id, &data);
     let cookie = Cookie::build("token", token)
         .path("/")
-        .max_age(ActixWebDuration::new(60 * data.env.jwt_max_age, 0))
+        .max_age(ActixWebDuration::new(60 * data.conf.jwt_max_age, 0))
         .http_only(true)
         .finish();
     let cookie2 = Cookie::build("login", "true")
         .path("/")
-        .max_age(ActixWebDuration::new(60 * data.env.jwt_max_age, 0))
+        .max_age(ActixWebDuration::new(60 * data.conf.jwt_max_age, 0))
         .http_only(false)
         .finish();
 
-    let frontend_origin = data.env.client_origin.to_owned();
+    let frontend_origin = data.conf.client_origin.to_owned();
     let mut response = HttpResponse::Found();
     response
         .append_header((LOCATION, frontend_origin))
