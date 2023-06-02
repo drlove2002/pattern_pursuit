@@ -11,6 +11,7 @@ use actix_web::{
     get, web, HttpResponse, Responder,
 };
 use reqwest::{header::LOCATION, Url};
+use slog::debug;
 
 #[get("/healthchecker")]
 async fn health_checker_handler() -> impl Responder {
@@ -42,7 +43,9 @@ async fn token_refresh_handler(
     auth_guard: AuthenticationGuard,
     data: web::Data<AppState>,
 ) -> impl Responder {
-    let token: String = gen_jwt_token(auth_guard.user_id, &data);
+    let token: String = gen_jwt_token(auth_guard.user_id.to_owned(), &data);
+    debug!(data.log, "Token refreshed"; "user_id" => auth_guard.user_id);
+
     let cookie = Cookie::build("token", token)
         .path("/")
         .max_age(ActixWebDuration::new(60 * data.conf.jwt_max_age, 0))

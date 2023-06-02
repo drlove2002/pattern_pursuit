@@ -38,7 +38,7 @@ async fn main() -> std::io::Result<()> {
             .configure(handler::config)
             .service(fs::new("/", "../frontend/static").index_file("index.html"))
             .wrap(cors)
-            .wrap(Logger::default())
+            .wrap(Logger::new("%r %s %b %{Referer}i %T").log_target("actix_web"))
     })
     .bind(("0.0.0.0", 3000))?
     .run()
