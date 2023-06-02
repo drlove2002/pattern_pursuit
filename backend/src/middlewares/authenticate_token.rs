@@ -1,12 +1,13 @@
-use std::future::{ready, Ready};
-
 use actix_web::{
     dev::Payload,
     error::{Error as ActixWebError, ErrorUnauthorized},
     http, web, FromRequest, HttpRequest,
 };
 use jsonwebtoken::{decode, Algorithm, DecodingKey, Validation};
+use redis::Commands;
 use serde_json::json;
+use slog::debug;
+use std::future::{ready, Ready};
 
 use crate::model::{AppState, TokenClaims};
 
@@ -36,7 +37,7 @@ impl FromRequest for AuthenticationGuard {
 
         let data = req.app_data::<web::Data<AppState>>().unwrap();
 
-        let jwt_secret = data.conf.jwt_secret.to_owned();
+        let jwt_secret = data.config.jwt_secret.to_owned();
         let decode = decode::<TokenClaims>(
             token.unwrap().as_str(),
             &DecodingKey::from_secret(jwt_secret.as_ref()),
@@ -45,10 +46,11 @@ impl FromRequest for AuthenticationGuard {
 
         match decode {
             Ok(token) => {
-                let vec = data.db.lock().unwrap();
-                let user = vec.iter().find(|user| user.id == token.claims.sub);
-
-                if user.is_none() {
+                let key = format!("profile:{}", token.claims.sub);
+                let mut conn = data.redis.get_conn();
+                let user_exists: bool = conn.exists(key).unwrap();
+                debug!(data.log, "User found?: {:?}", user_exists);
+                if !user_exists {
                     return ready(Err(ErrorUnauthorized(
                         json!({"status": "fail", "message": "User belonging to this token no logger exists"}),
                     )));
@@ -62,5 +64,9 @@ impl FromRequest for AuthenticationGuard {
                 json!({"status": "fail", "message": "Invalid token or user doesn't exists"}),
             ))),
         }
+    }
+
+    fn extract(req: &HttpRequest) -> Self::Future {
+        Self::from_request(req, &mut Payload::None)
     }
 }

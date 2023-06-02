@@ -1,11 +1,10 @@
+use crate::utils::{config::AppConfig, logging, redis::RedisClient};
+use redis_macros::{FromRedisValue, ToRedisArgs};
 use serde::{Deserialize, Serialize};
-use std::sync::{Arc, Mutex};
-
-use crate::utils::{config::AppConfig, logging};
 
 #[allow(non_snake_case)]
-#[derive(Debug, Deserialize, Serialize, Clone)]
-pub struct User {
+#[derive(Debug, Deserialize, Serialize, Clone, FromRedisValue, ToRedisArgs)]
+pub struct Profile {
     pub id: String,
     pub name: String,
     pub email: String,
@@ -13,21 +12,24 @@ pub struct User {
 }
 
 pub struct AppState {
-    pub db: Arc<Mutex<Vec<User>>>,
-    pub conf: AppConfig,
+    pub redis: RedisClient,
+    pub config: AppConfig,
     pub log: slog::Logger,
     pub http: reqwest::Client,
 }
 
 impl AppState {
-    pub fn init() -> AppState {
+    pub async fn init() -> AppState {
+        let log = logging::config();
+        let config = AppConfig::init(&log);
+        let redis = RedisClient::init(log.to_owned(), config.jwt_max_age).await;
         let state = AppState {
-            db: Arc::new(Mutex::new(Vec::new())),
-            conf: AppConfig::init(),
-            log: logging::config(),
+            redis,
+            config,
+            log: log.to_owned(),
             http: reqwest::Client::new(),
         };
-        slog::info!(state.log, "✅ App state initialized successfully");
+        slog::info!(log, "✅ App state initialized successfully");
         state
     }
 }
@@ -47,5 +49,11 @@ pub struct QueryCode {
 #[derive(Serialize, Debug)]
 pub struct UserResponse {
     pub status: String,
-    pub data: User,
+    pub data: Profile,
+}
+
+#[derive(Serialize, Debug)]
+pub struct ResponseMsg {
+    pub status: String,
+    pub message: String,
 }

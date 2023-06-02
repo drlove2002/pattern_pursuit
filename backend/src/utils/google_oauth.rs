@@ -28,9 +28,9 @@ pub async fn request_token(
     authorization_code: &str,
     data: &web::Data<AppState>,
 ) -> Result<OAuthResponse, Box<dyn Error>> {
-    let redirect_url = data.conf.google_oauth_redirect_url.to_owned();
-    let client_secret = data.conf.google_oauth_client_secret.to_owned();
-    let client_id = data.conf.google_oauth_client_id.to_owned();
+    let redirect_url = data.config.google_oauth_redirect_url.to_owned();
+    let client_secret = data.config.google_oauth_client_secret.to_owned();
+    let client_id = data.config.google_oauth_client_id.to_owned();
 
     let root_url = "https://oauth2.googleapis.com/token";
 

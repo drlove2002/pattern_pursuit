@@ -1,6 +1,6 @@
 use crate::{
     middlewares::authenticate_token::AuthenticationGuard,
-    model::{AppState, QueryCode, User, UserResponse},
+    model::{AppState, Profile, QueryCode, ResponseMsg, UserResponse},
     utils::{
         gen_jwt_token,
         google_oauth::{get_google_user, request_token},
@@ -25,8 +25,8 @@ async fn oauth_url_handler(data: web::Data<AppState>) -> impl Responder {
     let mut url = Url::parse("https://accounts.google.com/o/oauth2/v2/auth").unwrap();
 
     url.query_pairs_mut()
-        .append_pair("client_id", &data.conf.google_oauth_client_id)
-        .append_pair("redirect_uri", &data.conf.google_oauth_redirect_url)
+        .append_pair("client_id", &data.config.google_oauth_client_id)
+        .append_pair("redirect_uri", &data.config.google_oauth_redirect_url)
         .append_pair("response_type", "code")
         .append_pair("scope", "email profile")
         .append_pair("state", "random_string")
@@ -44,23 +44,29 @@ async fn token_refresh_handler(
     data: web::Data<AppState>,
 ) -> impl Responder {
     let token: String = gen_jwt_token(auth_guard.user_id.to_owned(), &data);
+    data.redis
+        .update_profile_ttl(auth_guard.user_id.to_owned())
+        .await;
     debug!(data.log, "Token refreshed"; "user_id" => auth_guard.user_id);
 
     let cookie = Cookie::build("token", token)
         .path("/")
-        .max_age(ActixWebDuration::new(60 * data.conf.jwt_max_age, 0))
+        .max_age(ActixWebDuration::new(60 * data.config.jwt_max_age, 0))
         .http_only(true)
         .finish();
     let cookie2 = Cookie::build("login", "true")
         .path("/")
-        .max_age(ActixWebDuration::new(60 * data.conf.jwt_max_age, 0))
+        .max_age(ActixWebDuration::new(60 * data.config.jwt_max_age, 0))
         .http_only(false)
         .finish();
 
     HttpResponse::Ok()
         .cookie(cookie)
         .cookie(cookie2)
-        .json(serde_json::json!({"status": "success", "message": "Token refreshed"}))
+        .json(ResponseMsg {
+            status: "success".to_string(),
+            message: "Token refreshed".to_string(),
+        })
 }
 
 #[get("/oauth/login")]
@@ -78,9 +84,10 @@ async fn google_oauth_handler(
 
     let token_response = request_token(code.as_str(), &data).await;
     if token_response.is_err() {
-        let message = token_response.err().unwrap().to_string();
-        return HttpResponse::BadGateway()
-            .json(serde_json::json!({"status": "fail", "message": message}));
+        return HttpResponse::BadGateway().json(ResponseMsg {
+            status: "fail".to_string(),
+            message: token_response.err().unwrap().to_string(),
+        });
     }
 
     let token_response = token_response.unwrap();
@@ -91,49 +98,35 @@ async fn google_oauth_handler(
     )
     .await;
     if google_user.is_err() {
-        let message = google_user.err().unwrap().to_string();
-        return HttpResponse::BadGateway()
-            .json(serde_json::json!({"status": "fail", "message": message}));
+        return HttpResponse::BadGateway().json(ResponseMsg {
+            status: "fail".to_string(),
+            message: google_user.err().unwrap().to_string(),
+        });
     }
 
     let google_user = google_user.unwrap();
 
-    let mut vec = data.db.lock().unwrap();
-    let user_id = google_user.id.to_owned();
-    let user = vec.iter_mut().find(|user| user.id == user_id);
-
-    if user.is_some() {
-        let user = user.unwrap();
-        user.name = google_user.name;
-        user.email = google_user.email.to_lowercase();
-        user.photo = google_user.picture;
-    } else {
-        let user_data = User {
-            id: google_user.id.to_owned(),
-            name: google_user.name,
-            email: google_user.email.to_lowercase(),
-            photo: google_user.picture,
-        };
-
-        vec.push(user_data);
-    }
-
+    let user = Profile {
+        id: google_user.id.to_owned(),
+        name: google_user.name,
+        email: google_user.email.to_lowercase(),
+        photo: google_user.picture,
+    };
+    data.redis.set_profile(user.to_owned()).await;
     let token: String = gen_jwt_token(google_user.id, &data);
     let cookie = Cookie::build("token", token)
         .path("/")
-        .max_age(ActixWebDuration::new(60 * data.conf.jwt_max_age, 0))
+        .max_age(ActixWebDuration::new(60 * data.config.jwt_max_age, 0))
         .http_only(true)
         .finish();
     let cookie2 = Cookie::build("login", "true")
         .path("/")
-        .max_age(ActixWebDuration::new(60 * data.conf.jwt_max_age, 0))
+        .max_age(ActixWebDuration::new(60 * data.config.jwt_max_age, 0))
         .http_only(false)
         .finish();
 
-    let frontend_origin = data.conf.client_origin.to_owned();
-    let mut response = HttpResponse::Found();
-    response
-        .append_header((LOCATION, frontend_origin))
+    HttpResponse::Found()
+        .append_header((LOCATION, data.config.client_origin.to_owned()))
         .cookie(cookie)
         .cookie(cookie2)
         .finish()
@@ -157,10 +150,7 @@ async fn logout_handler(
         .finish();
 
     // Remove user from db
-    let mut vec = data.db.lock().unwrap();
-    if let Some(index) = vec.iter().position(|user| user.id == auth_guard.user_id) {
-        vec.remove(index);
-    }
+    data.redis.delete_profile(auth_guard.user_id).await;
 
     HttpResponse::Found()
         .cookie(cookie)
@@ -174,15 +164,11 @@ async fn get_me_handler(
     auth_guard: AuthenticationGuard,
     data: web::Data<AppState>,
 ) -> impl Responder {
-    let vec = data.db.lock().unwrap();
-
-    let user = vec.iter().find(|user| user.id == auth_guard.user_id);
-
-    match user {
+    match data.redis.get_profile(auth_guard.user_id).await {
         Some(user) => {
             let json_response = UserResponse {
                 status: "success".to_string(),
-                data: user.to_owned(),
+                data: user,
             };
 
             HttpResponse::Ok().json(json_response)

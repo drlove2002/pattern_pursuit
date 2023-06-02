@@ -16,16 +16,17 @@ async fn main() -> std::io::Result<()> {
     if std::env::var_os("RUST_LOG").is_none() {
         std::env::set_var("RUST_LOG", "actix_web=info");
     }
+    // dotenv is only needed for local development
     dotenv().ok();
     env_logger::init();
 
-    let app_data = web::Data::new(AppState::init());
+    let app_data = web::Data::new(AppState::init().await);
 
     info!(app_data.log, "🚀 Server started successfully");
 
     HttpServer::new(move || {
         let cors = Cors::default()
-            .allowed_origin(&app_data.conf.client_origin)
+            .allowed_origin(&app_data.config.client_origin)
             .allowed_methods(vec!["GET", "POST"])
             .allowed_headers(vec![
                 header::CONTENT_TYPE,
