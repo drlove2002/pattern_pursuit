@@ -14,7 +14,7 @@ pub fn gen_jwt_token(user_id: String, data: &web::Data<AppState>) -> String {
     let now = Utc::now();
     let claims: TokenClaims = TokenClaims {
         sub: user_id,
-        exp: (now + Duration::minutes(data.config.jwt_max_age)).timestamp() as usize,
+        exp: (now + Duration::seconds(data.config.jwt_max_age)).timestamp() as usize,
         iat: now.timestamp() as usize,
     };
 

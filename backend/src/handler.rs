@@ -1,6 +1,6 @@
 use crate::{
     middlewares::authenticate_token::AuthenticationGuard,
-    model::{AppState, Profile, QueryCode, ResponseMsg, UserResponse},
+    model::{AppState, QueryCode, ResponseMsg, UserResponse},
     utils::{
         gen_jwt_token,
         google_oauth::{get_google_user, request_token},
@@ -10,6 +10,8 @@ use actix_web::{
     cookie::{time::Duration as ActixWebDuration, Cookie},
     get, web, HttpResponse, Responder,
 };
+use redis::AsyncCommands;
+use redis::RedisResult;
 use reqwest::{header::LOCATION, Url};
 use slog::debug;
 
@@ -39,7 +41,7 @@ async fn oauth_url_handler(data: web::Data<AppState>) -> impl Responder {
 }
 
 #[get("/refresh")]
-async fn token_refresh_handler(
+async fn jwt_refresh_handler(
     auth_guard: AuthenticationGuard,
     data: web::Data<AppState>,
 ) -> impl Responder {
@@ -51,12 +53,12 @@ async fn token_refresh_handler(
 
     let cookie = Cookie::build("token", token)
         .path("/")
-        .max_age(ActixWebDuration::new(60 * data.config.jwt_max_age, 0))
+        .max_age(ActixWebDuration::new(data.config.jwt_max_age, 0))
         .http_only(true)
         .finish();
     let cookie2 = Cookie::build("login", "true")
         .path("/")
-        .max_age(ActixWebDuration::new(60 * data.config.jwt_max_age, 0))
+        .max_age(ActixWebDuration::new(data.config.jwt_max_age, 0))
         .http_only(false)
         .finish();
 
@@ -91,37 +93,50 @@ async fn google_oauth_handler(
     }
 
     let token_response = token_response.unwrap();
-    let google_user = get_google_user(
+    let user = get_google_user(
         &token_response.access_token,
         &token_response.id_token,
         &data,
     )
     .await;
-    if google_user.is_err() {
+    if user.is_err() {
         return HttpResponse::BadGateway().json(ResponseMsg {
             status: "fail".to_string(),
-            message: google_user.err().unwrap().to_string(),
+            message: user.err().unwrap().to_string(),
         });
     }
 
-    let google_user = google_user.unwrap();
+    let user = user.unwrap();
 
-    let user = Profile {
-        id: google_user.id.to_owned(),
-        name: google_user.name,
-        email: google_user.email.to_lowercase(),
-        photo: google_user.picture,
-    };
+    {
+        let mut con = data.redis.get_conn_async();
+
+        let result: RedisResult<u8> = con
+            .hset(
+                format!("user:{}", user.id),
+                "refresh_token",
+                &token_response.refresh_token,
+            )
+            .await;
+        match result {
+            Ok(_) => {
+                debug!(data.log, "Refresh token saved to redis"; "user_id" => user.id.to_owned());
+            }
+            Err(e) => {
+                debug!(data.log, "Failed to save refresh token to redis"; "user_id" => user.id.to_owned(), "error" => e.to_string());
+            }
+        }
+    }
     data.redis.set_profile(user.to_owned()).await;
-    let token: String = gen_jwt_token(google_user.id, &data);
+    let token: String = gen_jwt_token(user.id, &data);
     let cookie = Cookie::build("token", token)
         .path("/")
-        .max_age(ActixWebDuration::new(60 * data.config.jwt_max_age, 0))
+        .max_age(ActixWebDuration::new(data.config.jwt_max_age, 0))
         .http_only(true)
         .finish();
     let cookie2 = Cookie::build("login", "true")
         .path("/")
-        .max_age(ActixWebDuration::new(60 * data.config.jwt_max_age, 0))
+        .max_age(ActixWebDuration::new(data.config.jwt_max_age, 0))
         .http_only(false)
         .finish();
 
@@ -150,7 +165,13 @@ async fn logout_handler(
         .finish();
 
     // Remove user from db
-    data.redis.delete_profile(auth_guard.user_id).await;
+    data.redis
+        .delete_profile(auth_guard.user_id.to_owned())
+        .await;
+    let mut con = data.redis.get_conn_async();
+    let _: RedisResult<u8> = con
+        .hdel(format!("user:{}", auth_guard.user_id), "refresh_token")
+        .await;
 
     HttpResponse::Found()
         .cookie(cookie)
@@ -164,25 +185,23 @@ async fn get_me_handler(
     auth_guard: AuthenticationGuard,
     data: web::Data<AppState>,
 ) -> impl Responder {
-    match data.redis.get_profile(auth_guard.user_id).await {
-        Some(user) => {
-            let json_response = UserResponse {
-                status: "success".to_string(),
-                data: user,
-            };
-
-            HttpResponse::Ok().json(json_response)
-        }
-        None => HttpResponse::NotFound()
-            .json(serde_json::json!({"status": "fail", "message": "User not found!"})),
-    }
+    let user = data
+        .redis
+        .get_profile(auth_guard.user_id.to_owned())
+        .await
+        .unwrap();
+    let json_response = UserResponse {
+        status: "success".to_string(),
+        data: user,
+    };
+    HttpResponse::Ok().json(json_response)
 }
 
 pub fn config(cfg: &mut web::ServiceConfig) {
     cfg.service(
         web::scope("/api")
             .service(health_checker_handler)
-            .service(token_refresh_handler)
+            .service(jwt_refresh_handler)
             .service(oauth_url_handler)
             .service(google_oauth_handler)
             .service(logout_handler)

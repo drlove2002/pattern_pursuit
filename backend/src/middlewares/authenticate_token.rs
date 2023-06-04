@@ -3,13 +3,17 @@ use actix_web::{
     error::{Error as ActixWebError, ErrorUnauthorized},
     http, web, FromRequest, HttpRequest,
 };
+use futures::Future;
 use jsonwebtoken::{decode, Algorithm, DecodingKey, Validation};
-use redis::Commands;
+use redis::{AsyncCommands, RedisResult};
 use serde_json::json;
 use slog::debug;
-use std::future::{ready, Ready};
+use std::pin::Pin;
 
-use crate::model::{AppState, TokenClaims};
+use crate::{
+    model::{AppState, TokenClaims},
+    utils::google_oauth::{get_google_user, request_access_token},
+};
 
 pub struct AuthenticationGuard {
     pub user_id: String,
@@ -17,7 +21,7 @@ pub struct AuthenticationGuard {
 
 impl FromRequest for AuthenticationGuard {
     type Error = ActixWebError;
-    type Future = Ready<Result<Self, Self::Error>>;
+    type Future = Pin<Box<dyn Future<Output = Result<Self, Self::Error>>>>;
 
     fn from_request(req: &HttpRequest, _: &mut Payload) -> Self::Future {
         let token = req
@@ -30,12 +34,15 @@ impl FromRequest for AuthenticationGuard {
             });
 
         if token.is_none() {
-            return ready(Err(ErrorUnauthorized(
-                json!({"status": "fail", "message": "You are not logged in, please provide token"}),
-            )));
+            return Box::pin(async move {
+                Err(ErrorUnauthorized(
+                    json!({"status": "fail", "message": "You are not logged in, please provide token"}),
+                ))
+            });
         }
 
-        let data = req.app_data::<web::Data<AppState>>().unwrap();
+        let req = req.clone();
+        let data = req.app_data::<web::Data<AppState>>().unwrap().clone();
 
         let jwt_secret = data.config.jwt_secret.to_owned();
         let decode = decode::<TokenClaims>(
@@ -44,26 +51,57 @@ impl FromRequest for AuthenticationGuard {
             &Validation::new(Algorithm::HS256),
         );
 
-        match decode {
-            Ok(token) => {
-                let key = format!("profile:{}", token.claims.sub);
-                let mut conn = data.redis.get_conn();
-                let user_exists: bool = conn.exists(key).unwrap();
-                debug!(data.log, "User found?: {:?}", user_exists);
-                if !user_exists {
-                    return ready(Err(ErrorUnauthorized(
-                        json!({"status": "fail", "message": "User belonging to this token no logger exists"}),
-                    )));
-                }
+        let mut conn = data.redis.get_conn_async();
+        Box::pin(async move {
+            match decode {
+                Ok(token) => {
+                    let key = format!("profile:{}", token.claims.sub);
+                    let user_exists: bool = conn.exists(key).await.unwrap();
+                    debug!(data.log, "User found?: {:?}", user_exists);
+                    if !user_exists {
+                        let refresh_token: RedisResult<String> = conn
+                            .hget(format!("user:{}", token.claims.sub), "refresh_token")
+                            .await;
+                        let access_token = match refresh_token {
+                            Ok(refresh_token) => {
+                                request_access_token(refresh_token.as_str(), &data).await
+                            }
+                            Err(_) => {
+                                return Err(ErrorUnauthorized(
+                                    json!({"status": "fail", "message": "Failed to retrieve refresh token"}),
+                                ))
+                            }
+                        };
+                        let access_token = match access_token {
+                            Ok(access_token) => access_token,
+                            Err(_) => {
+                                return Err(ErrorUnauthorized(
+                                    json!({"status": "fail", "message": "Failed to retrieve access token"}),
+                                ))
+                            }
+                        };
 
-                ready(Ok(AuthenticationGuard {
-                    user_id: token.claims.sub,
-                }))
+                        let user = match get_google_user(&access_token, &access_token, &data).await
+                        {
+                            Ok(user) => user,
+                            Err(_) => {
+                                return Err(ErrorUnauthorized(
+                                    json!({"status": "fail", "message": "Failed to retrieve user data"}),
+                                ))
+                            }
+                        };
+
+                        data.redis.set_profile(user.to_owned()).await;
+                    }
+                    Ok(AuthenticationGuard {
+                        user_id: token.claims.sub,
+                    })
+                }
+                Err(_) => Err(ErrorUnauthorized(
+                    json!({"status": "fail", "message": "Invalid token or user doesn't exists"}),
+                )),
             }
-            Err(_) => ready(Err(ErrorUnauthorized(
-                json!({"status": "fail", "message": "Invalid token or user doesn't exists"}),
-            ))),
-        }
+        })
     }
 
     fn extract(req: &HttpRequest) -> Self::Future {

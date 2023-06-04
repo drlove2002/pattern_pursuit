@@ -24,7 +24,7 @@ function setProfile() {
     }).done(function (data) {
         data = data.data;
         // Set profile data
-        $("#profile-picture").attr("src", data.photo);
+        $("#profile-picture").attr("src", data.picture);
         $("#profile-name").html(data.name);
         $("#profile-email").html(data.email);
 

@@ -3,7 +3,7 @@ use reqwest::Url;
 use serde::Deserialize;
 use std::error::Error;
 
-use crate::model::AppState;
+use crate::model::{AppState, Profile};
 
 #[derive(Deserialize)]
 pub struct OAuthResponse {
@@ -13,15 +13,36 @@ pub struct OAuthResponse {
 }
 
 #[derive(Deserialize)]
-pub struct GoogleUserResult {
-    pub id: String,
-    pub email: String,
-    pub verified_email: bool,
-    pub name: String,
-    pub given_name: String,
-    pub family_name: String,
-    pub picture: String,
-    pub locale: String,
+pub struct TokenResponse {
+    pub access_token: String,
+    pub expires_in: usize,
+}
+
+/// Get access token from Google using refresh token
+pub async fn request_access_token(
+    refresh_token: &str,
+    data: &web::Data<AppState>,
+) -> Result<String, Box<dyn Error>> {
+    let root_url = "https://oauth2.googleapis.com/token";
+    let client_secret = data.config.google_oauth_client_secret.to_owned();
+    let client_id = data.config.google_oauth_client_id.to_owned();
+
+    let params = [
+        ("grant_type", "refresh_token"),
+        ("client_id", client_id.as_str()),
+        ("client_secret", client_secret.as_str()),
+        ("refresh_token", refresh_token),
+    ];
+    let response = data.http.post(root_url).form(&params).send().await?;
+
+    if response.status().is_success() {
+        // Get access token from response and return it as a String
+        let oauth_response = response.json::<TokenResponse>().await?;
+        Ok(oauth_response.access_token)
+    } else {
+        let message = "An error occurred while trying to retrieve access token.";
+        Err(From::from(message))
+    }
 }
 
 pub async fn request_token(
@@ -56,7 +77,7 @@ pub async fn get_google_user(
     access_token: &str,
     id_token: &str,
     data: &web::Data<AppState>,
-) -> Result<GoogleUserResult, Box<dyn Error>> {
+) -> Result<Profile, Box<dyn Error>> {
     let mut url = Url::parse("https://www.googleapis.com/oauth2/v1/userinfo").unwrap();
     url.query_pairs_mut().append_pair("alt", "json");
     url.query_pairs_mut()
@@ -65,7 +86,8 @@ pub async fn get_google_user(
     let response = data.http.get(url).bearer_auth(id_token).send().await?;
 
     if response.status().is_success() {
-        let user_info = response.json::<GoogleUserResult>().await?;
+        // get google user data in raw json format
+        let user_info = response.json::<Profile>().await?;
         Ok(user_info)
     } else {
         let message = "An error occurred while trying to retrieve user information.";

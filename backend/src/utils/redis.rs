@@ -3,28 +3,26 @@ use redis::{aio::MultiplexedConnection, AsyncCommands, Client};
 use slog::{debug, error, info, Logger};
 
 pub struct RedisClient {
-    client: Client,
     con: MultiplexedConnection,
     log: Logger,
     max_ttl: usize,
 }
 
 impl RedisClient {
-    pub async fn init(log: Logger, ttl: i64) -> RedisClient {
+    pub async fn init(log: Logger, ttl: usize) -> RedisClient {
         let client = Client::open(std::env::var("REDIS_URL").unwrap()).unwrap();
         let con = client.get_multiplexed_tokio_connection().await.unwrap();
         info!(log, "✅ Redis client initialized successfully");
         RedisClient {
-            client,
             con,
             log,
-            max_ttl: (ttl * 60 * 60).try_into().unwrap(),
+            max_ttl: ttl,
         }
     }
 
-    /// Get sync connection from Redis
-    pub fn get_conn(&self) -> redis::Connection {
-        self.client.get_connection().unwrap()
+    /// Get async connection from Redis
+    pub fn get_conn_async(&self) -> MultiplexedConnection {
+        self.con.clone()
     }
 
     /// Get profile(id, name, email, photo) from Redis

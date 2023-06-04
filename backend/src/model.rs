@@ -8,7 +8,7 @@ pub struct Profile {
     pub id: String,
     pub name: String,
     pub email: String,
-    pub photo: String,
+    pub picture: String,
 }
 
 pub struct AppState {
@@ -22,7 +22,7 @@ impl AppState {
     pub async fn init() -> AppState {
         let log = logging::config();
         let config = AppConfig::init(&log);
-        let redis = RedisClient::init(log.to_owned(), config.jwt_max_age).await;
+        let redis = RedisClient::init(log.to_owned(), config.reids_cache_ttl).await;
         let state = AppState {
             redis,
             config,
