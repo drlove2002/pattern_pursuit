@@ -46,19 +46,19 @@
                     <span class="button__icon">
                         <ion-icon name="help-circle"></ion-icon>
                     </span>
-                    <span class="button__text">Help</span>
+                    Help
                 </button>
                 <a href="/api/oauth/logout" id="logout" class="button">
                     <span class="button__icon">
                         <ion-icon name="log-out"></ion-icon>
                     </span>
-                    <span class="button__text">Sign Out</span>
+                    Sign Out
                 </a>
                 <button type="button" id="multi" class="button">
                     <span class="button__icon">
                         <ion-icon name="shapes"></ion-icon>
                     </span>
-                    <span class="button__text">Multiplayer</span>
+                    Multiplayer
                 </button>
             </div>
         </nav>
@@ -79,20 +79,38 @@
                         alt="Bot Balance">
                     <img class="card-icon" src="https://cdn-icons-png.flaticon.com/512/735/735734.png"
                         alt="Bot Accuracy">
+                    <img class="card-icon" src="https://cdn-icons-png.flaticon.com/512/3884/3884708.png"
+                        alt="Highest Earning">
                 </div>
                 <div class="title container">
                     <h5 class="card-title" id="player-balance-lable">Your Balance</h5>
-                    <h5 class="card-title" id="player-balance-lable">My Balance</h5>
-                    <h5 class="card-title" id="player-balance-lable">My Accuracy</h5>
+                    <h5 class="card-title" id="bot-balance-lable">My Balance</h5>
+                    <h5 class="card-title" id="bot-accuracy-lable">My Accuracy</h5>
+                    <h5 class="card-title" id="highest-earning-lable">Highest Earning</h5>
                 </div>
                 <div class="body container">
-                    <h5 class="card-body" id="player-balance">$1000</h5>
-                    <h5 class="card-body" id="bot-balance">$1000</h5>
-                    <h5 class="card-body" id="bot-accuracy">%0</h5>
+                    <h5 class="card-body" id="player-balance">1000$</h5>
+                    <h5 class="card-body" id="bot-balance">1000$</h5>
+                    <h5 class="card-body" id="bot-accuracy">0%</h5>
+                    <h5 class="card-body" id="highest-earning">0$</h5>
                 </div>
             </div>
         </div>
-        <div id="choices"></div>
+        <div id="choices">
+            <button type="button" id="multi" class="button">
+                <span class="button__icon">
+                    <ion-icon name="caret-back-circle-outline"></ion-icon>
+                </span>
+                Left
+            </button>
+
+            <button type="button" id="multi" class="button">
+                Right
+                <span class="button__icon">
+                    <ion-icon name="caret-forward-circle-outline"></ion-icon>
+                </span>
+            </button>
+        </div>
     </div>
     <!-- Scripts -->
     <script type="module" src="https://unpkg.com/ionicons@5.0.0/dist/ionicons/ionicons.esm.js"></script>

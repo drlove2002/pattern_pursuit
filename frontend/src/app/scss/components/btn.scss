@@ -9,9 +9,12 @@
     border: 0;
     display: flex;
     align-items: center;
-    font-size: 14px;
     font-weight: 600;
+    gap: 10px;
     white-space: nowrap;
+    font-size: rem(14);
+    line-height: 1;
+    color: var(--glass-gray-2);
 
     &:hover {
         cursor: pointer;
@@ -22,39 +25,15 @@
         background: rgba(255, 255, 255, 0.432);
     }
 
-    &__text {
-        display: block;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        overflow: hidden;
-        display: -webkit-flex;
-        -webkit-align-items: center;
-        align-items: center;
-        position: relative;
-        font-size: rem(13.5);
-        line-height: 1;
-        filter: drop-shadow(3px 2px 5px rgba(0, 0, 0, 0.5));
-
-
-    }
-
     &__icon {
-        font-size: 22px;
-        margin-inline-end: 10px;
-        width: 20px;
-        height: 20px;
+        font-size: rem(22);
         line-height: 20px;
         border-radius: 2px;
         text-align: center;
-        filter: drop-shadow(3px 2px 5px rgba(0, 0, 0, 0.5));
-
-
-    }
-
-    &__icon,
-    &__text {
         color: var(--glass-gray-2);
+        filter: drop-shadow(3px 2px 5px rgba(0, 0, 0, 0.5));
     }
+
 }
 
 

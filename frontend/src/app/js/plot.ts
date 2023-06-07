@@ -13,7 +13,7 @@ var trace = {
 
 // Create layout object
 var layout = {
-    title: 'Player Balance Over Time',
+    title: 'Balance Over Time',
     xaxis: {
         title: 'Round'
     },

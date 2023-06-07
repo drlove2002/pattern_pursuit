@@ -20,6 +20,13 @@
             align-items: flex-start;
             justify-content: space-around;
         }
+
+        .icon,
+        .title,
+        .body {
+            margin-block: 15px;
+            gap: 15px
+        }
     }
 
     .card-icon {
