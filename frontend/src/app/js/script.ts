@@ -1,6 +1,7 @@
 import Cookies from 'js-cookie';
 import { setupRefreshTimer } from './task';
 import { plotInit } from './plot';
+import { handleUserInput } from './player';
 
 // Get id big-text
 var bt = $("#big-text");
@@ -53,7 +54,29 @@ function openPopup(popupContent: string) {
 }
 
 
+function doKeyPressEffect(buttonId: string) {
+    // Add key press effect to left and right button
+    var btn = $("#" + buttonId);
+    btn.addClass("key-pressed");
+    setTimeout(function () {
+        btn.removeClass("key-pressed");
+    }, 100);
+}
+
 $(function () {
+
+    // Add keyboard event listener for left and right button
+    $(document).on('keydown', (e) => {
+        if (e.key == "ArrowLeft") {
+            handleUserInput("left");
+            doKeyPressEffect("left");
+        }
+        else if (e.key == "ArrowRight") {
+            handleUserInput("right");
+            doKeyPressEffect("right");
+        }
+    });
+
     if (nav.length) {
         const toggle = nav.find(".nav-toggle");
 
@@ -100,17 +123,20 @@ $(function () {
             var popupContent =
                 '<div id="rules">' +
                 '<h2>How to play?</h1>' +
-                '<p>you\'ll be presented with a choice between "heads" or "tails". ' +
+                '<p>you\'ll be presented with a choice between "left" or "right". ' +
                 'My task is to guess your selection before it\'s revealed. If I guess right,' +
                 ' you lose $100 while I earn $100. But if I guess wrong, you\'ll earn $100 while I lose $100.' +
                 ' The key is to outsmart me by being as random as possible, which will help you earn more money.' +
                 ' Are you up for the challenge? Let the game begin, and may luck be on your side!</p>' +
                 '</div>';
+        else if (buttonId == "left" || buttonId == "right") {
+            handleUserInput(buttonId);
+            return;
+        }
         else
             var popupContent = "<h1>Coming soon...</h1>";
 
         openPopup(popupContent);
-
     });
 
     // Make a function to close popup window
