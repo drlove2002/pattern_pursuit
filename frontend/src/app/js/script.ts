@@ -1,6 +1,6 @@
-import $ from 'jquery';
 import Cookies from 'js-cookie';
 import { setupRefreshTimer } from './task';
+import { plotInit } from './plot';
 
 // Get id big-text
 var bt = $("#big-text");
@@ -43,7 +43,7 @@ function setProfile() {
 const popup = $("#popup-window");
 const nav = $(".nav-container");
 
-function openPopup(popupContent) {
+function openPopup(popupContent: string) {
     popup.addClass("is-active");
     popup.find(".popup-content").html(popupContent);
 
@@ -134,5 +134,6 @@ $(function () {
         setupRefreshTimer();
     }
 
+    plotInit();
 });
 

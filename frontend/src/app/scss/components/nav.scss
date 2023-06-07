@@ -6,7 +6,7 @@ $toggleLine: 4px;
 $toggleColor: var(--glass-gray-1);
 
 .nav-container {
-    position: relative;
+    position: absolute;
     display: inline-block;
     max-width: $toggleSize + $toggleMargin;
     max-height: $toggleSize + $toggleMargin;

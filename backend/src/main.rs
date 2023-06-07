@@ -41,7 +41,7 @@ async fn main() -> std::io::Result<()> {
             .wrap(cors)
             .wrap(Logger::new("%r %s %b %{Referer}i %T").log_target("actix_web"))
     })
-    .bind(("0.0.0.0", 3000))?
+    .bind(("localhost", 3000))?
     .run()
     .await
 }

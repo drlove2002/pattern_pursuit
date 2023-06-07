@@ -6,6 +6,38 @@
     }
 }
 
+.content {
+    display: grid;
+    grid-template-rows: 3fr 1fr;
+    grid-template-columns: 3fr 1fr;
+    grid-template-areas:
+        "plot sidebar"
+        "footer footer";
+    height: 100vh;
+}
+
+#score {
+    grid-area: sidebar;
+}
+
+#plot {
+    grid-area: plot;
+}
+
+#choices {
+    grid-area: footer;
+}
+
+#plot,
+#choices,
+#score {
+    margin: 10px;
+    background: var(--glass-colour);
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+}
+
 #popup-window {
     position: fixed;
     display: none;

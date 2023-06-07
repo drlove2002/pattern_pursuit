@@ -19,7 +19,6 @@
     <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png">
     <link rel="manifest" href="assets/site.webmanifest">
     <link rel="stylesheet" href="css/style.css">
-    <script defer src="js/script.js"></script>
 
     <title>Randomness</title>
 </head>
@@ -69,10 +68,38 @@
         <div class="popup-content"></div>
     </div>
     <div class="content">
-        <h1 id="big-text">Game of Randomness</h1>
+        <div id="plot"></div>
+        <div id="score">
+            <img id="bot-gif" src="assets/robot.webp" alt="Bot Hovering">
+            <div class="inner-score">
+                <div class="icon container">
+                    <img class="card-icon" src="https://cdn-icons-png.flaticon.com/512/639/639365.png"
+                        alt="Player Balance">
+                    <img class="card-icon" src="https://cdn-icons-png.flaticon.com/512/639/639365.png"
+                        alt="Bot Balance">
+                    <img class="card-icon" src="https://cdn-icons-png.flaticon.com/512/735/735734.png"
+                        alt="Bot Accuracy">
+                </div>
+                <div class="title container">
+                    <h5 class="card-title" id="player-balance-lable">Your Balance</h5>
+                    <h5 class="card-title" id="player-balance-lable">My Balance</h5>
+                    <h5 class="card-title" id="player-balance-lable">My Accuracy</h5>
+                </div>
+                <div class="body container">
+                    <h5 class="card-body" id="player-balance">$1000</h5>
+                    <h5 class="card-body" id="bot-balance">$1000</h5>
+                    <h5 class="card-body" id="bot-accuracy">%0</h5>
+                </div>
+            </div>
+        </div>
+        <div id="choices"></div>
     </div>
     <!-- Scripts -->
     <script type="module" src="https://unpkg.com/ionicons@5.0.0/dist/ionicons/ionicons.esm.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"
+        integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+    <script src="https://cdn.plot.ly/plotly-2.20.0.min.js" charset="utf-8"></script>
+    <script src="js/script.js"></script>
 </body>
 
 </html>

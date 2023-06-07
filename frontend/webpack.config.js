@@ -26,18 +26,19 @@ module.exports = {
     },
     mode: 'production',
     optimization: {
-        minimize: true,
-        minimizer: [
-            new TerserPlugin({
-                terserOptions: {
-                    compress: {},
-                    mangle: true,
-                    format: {
-                        comments: false,
-                    },
-                },
-                extractComments: false,
-            }),
-        ],
+        // minimize: true,
+        minimize: false,
+        // minimizer: [
+        //     new TerserPlugin({
+        //         terserOptions: {
+        //             compress: {},
+        //             mangle: true,
+        //             format: {
+        //                 comments: false,
+        //             },
+        //         },
+        //         extractComments: false,
+        //     }),
+        // ],
     },
 };    

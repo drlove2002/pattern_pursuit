@@ -1,4 +1,3 @@
-import $ from 'jquery';
 export function sendRefreshRequest() {
     $.ajax({
         url: '/api/refresh',

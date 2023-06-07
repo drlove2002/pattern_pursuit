@@ -34,7 +34,8 @@ html:focus-within {
 
 /* Set core body defaults */
 body {
-  min-height: 100vh;
+  height: 100%;
+  width: 100%;
   text-rendering: optimizeSpeed;
   line-height: 1.5;
 }
@@ -109,7 +110,7 @@ body {
   }
 }
 
-@media (max-width: 768px) {
+@include breakpoint-down(small) {
   video {
     display: none;
   }
