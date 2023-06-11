@@ -86,15 +86,15 @@ $(function () {
     // If user is not logged in, show login button in popup
     if (!Cookies.get("login") || Cookies.get("login") == "false") {
         var popupContent =
-            '<h2>Before continuing you must login.</h2>' +
-            '<div class="google-btn">' +
-            '<a href="/api/login">' +
-            '<div class="google-icon-wrapper">' +
-            '<img class="google-icon" src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="google icon"/>' +
-            '</div>' +
-            '<p class="btn-text"><b>Sign in with google</b></p>' +
-            '</a>' +
-            '</div>';
+            `<h2>Before continuing you must login.</h2>
+            <div class="google-btn">
+            <a href="/api/login">
+            <div class="google-icon-wrapper">
+            <img class="google-icon" src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="google icon"/>
+            </div>
+            <p class="btn-text"><b>Sign in with google</b></p>
+            </a>
+            </div>`;
         popup.find(".popup-close").hide();
         openPopup(popupContent);
     }
@@ -108,15 +108,16 @@ $(function () {
 
         var buttonId = e.currentTarget.id;
         if (buttonId == "help")
-            var popupContent =
-                '<div id="rules">' +
-                '<h2>How to play?</h1>' +
-                '<p>you\'ll be presented with a choice between "left" or "right". ' +
-                'My task is to guess your selection before it\'s revealed. If I guess right,' +
-                ' you lose $100 while I earn $100. But if I guess wrong, you\'ll earn $100 while I lose $100.' +
-                ' The key is to outsmart me by being as random as possible, which will help you earn more money.' +
-                ' Are you up for the challenge? Let the game begin, and may luck be on your side!</p>' +
-                '</div>';
+            var popupContent = `
+            <div id="rules">
+            <h2>How to play?</h2>
+            <p>You'll be presented with a choice between "<strong>left</strong>" or "<strong>right</strong>". 
+                My task is to guess your selection before it's revealed. 
+                If I guess right, I take some money from you. 
+                But if I guess wrong, you'll get money from me. 
+                The key is to outsmart me by being as <em>random</em> as possible, which will help you earn more money.
+            </p>
+            </div>`;
         else if (buttonId == "left" || buttonId == "right") {
             handleUserInput(buttonId);
             return;
