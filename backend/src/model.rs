@@ -40,6 +40,11 @@ pub struct TokenClaims {
     pub iat: usize,
     pub exp: usize,
 }
+#[derive(Debug, Deserialize)]
+pub struct LbData {
+    pub accuracy: u32,
+    pub highscore: u32,
+}
 
 #[derive(Debug, Deserialize)]
 pub struct QueryCode {
@@ -50,6 +55,15 @@ pub struct QueryCode {
 pub struct UserResponse {
     pub status: String,
     pub data: Profile,
+}
+
+#[derive(Serialize, Debug)]
+pub struct LbResponse {
+    pub rank: u32,
+    pub name: String,
+    pub pfp: String,
+    pub accuracy: u32,
+    pub highscore: u32,
 }
 
 #[derive(Serialize, Debug)]

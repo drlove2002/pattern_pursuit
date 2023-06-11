@@ -2,19 +2,7 @@ import Cookies from 'js-cookie';
 import { setupRefreshTimer } from './task';
 import { plotInit } from './plot';
 import { handleUserInput } from './player';
-
-// Get id big-text
-var bt = $("#big-text");
-// on load function 
-$(window).on("load", function () {
-    // set time out function
-    setTimeout(function () {
-        bt.css("opacity", "1");
-        bt.addClass("text-animate");
-    }, 1000);
-    // Set bt margin-top and font-size
-});
-
+import { createLeaderboard } from './leaderbord';
 
 function setProfile() {
     // Get profile data from /api/users/me
@@ -32,12 +20,12 @@ function setProfile() {
         // Make sign-in button to sign-out button
         const login = $("#login");
         login.attr("id", "logout");
-        login.find(".button__text").html("Sign out");
+        login.find(".button__text").html("Sign out");  // TODO: Remove this code section because it is not needed
     }).fail(function (data) {
         // If fail, remove cookie
         Cookies.remove("login");
         Cookies.remove("token");
-        location.reload();
+        location.reload(); // TODO: Redirect to home page
     })
 }
 
@@ -133,6 +121,13 @@ $(function () {
             handleUserInput(buttonId);
             return;
         }
+        else if (buttonId == "lb-btn") {
+            // Set popup content to empty leaderboard table with #leaderboard-table
+            var popupContent = "<table class='leaderboard'></table>";
+            openPopup(popupContent);
+            createLeaderboard();
+            return;
+        }
         else
             var popupContent = "<h1>Coming soon...</h1>";
 
@@ -158,8 +153,7 @@ $(function () {
     if (Cookies.get("login")) {
         setProfile();
         setupRefreshTimer();
-    }
+    } // TODO: Redirect to home page if not logged in
 
     plotInit();
 });
-

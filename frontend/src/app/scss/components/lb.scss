@@ -1,0 +1,112 @@
+@use "../utils/functions" as *;
+/* Define variables for reusability */
+$gray: #9e9fa0;
+$gold: #d2ae56;
+$silver: #6e6d86;
+$brown: #8e643e;
+
+.leaderboard {
+    width: 100%;
+    border-collapse: collapse;
+    border: none;
+    border-spacing: 0 1em;
+
+
+    th {
+        color: $gray;
+    }
+
+
+
+    td {
+        color: #001e3d;
+        font-weight: 600;
+        text-align: center;
+        vertical-align: middle;
+        padding-block: 10px;
+    }
+
+    .row {
+        position: relative;
+
+        &:nth-child(2) {
+
+            &::before {
+                border-color: $gold;
+            }
+
+            .lb-rank {
+                color: $gold;
+            }
+        }
+
+        &:nth-child(3) {
+
+            &::before {
+                border-color: $silver;
+            }
+
+            .lb-rank {
+                color: $silver;
+            }
+        }
+
+        &:nth-child(4) {
+
+            &::before {
+                border-color: $brown;
+            }
+
+            .lb-rank {
+                color: $brown;
+            }
+        }
+
+        &:last-child {
+            &::before {
+                border-width: 3px;
+            }
+        }
+
+
+        &::before {
+            content: "";
+            position: absolute;
+            top: 5px;
+            left: -5px;
+            right: -5px;
+            bottom: 5px;
+            border: 2px solid $gray;
+            border-radius: 10px;
+            transform: skew(-10deg);
+            /* Adjust the skew angle as needed */
+            z-index: -1;
+        }
+
+        .lb-rank {
+            font-size: rem(23);
+            color: $gray;
+
+            &:nth-child(2) {
+                color: #d2ae56;
+            }
+
+            &:nth-child(3) {
+                color: #6e6d86;
+            }
+
+            &:nth-child(4) {
+                color: #8e643e;
+            }
+        }
+    }
+
+    img {
+        display: block;
+        margin: 0 auto;
+        width: 50px;
+        height: 50px;
+        border-radius: 30%;
+        object-fit: cover;
+    }
+}

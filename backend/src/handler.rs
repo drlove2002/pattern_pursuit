@@ -1,25 +1,138 @@
 use crate::{
     middlewares::authenticate_token::AuthenticationGuard,
-    model::{AppState, QueryCode, ResponseMsg, UserResponse},
+    model::{AppState, LbData, LbResponse, QueryCode, ResponseMsg, UserResponse},
     utils::{
         gen_jwt_token,
         google_oauth::{get_google_user, request_token},
     },
 };
 use actix_web::{
-    cookie::{time::Duration as ActixWebDuration, Cookie},
-    get, web, HttpResponse, Responder,
+    cookie::{time::Duration as ActixWebDuration, Cookie, SameSite},
+    get, post, web, HttpResponse, Responder,
 };
 use redis::AsyncCommands;
 use redis::RedisResult;
 use reqwest::{header::LOCATION, Url};
-use slog::debug;
+use slog::{debug, error};
 
 #[get("/healthchecker")]
 async fn health_checker_handler() -> impl Responder {
     const MESSAGE: &str = "I'm up and running!";
 
     HttpResponse::Ok().json(serde_json::json!({"status": "success", "message": MESSAGE}))
+}
+
+// Get top 5 users from the leaderboard and the user's position
+#[get("/leaderboard")]
+async fn leaderboard_handler(
+    auth_guard: AuthenticationGuard,
+    data: web::Data<AppState>,
+) -> impl Responder {
+    let mut conn = data.redis.get_conn_async();
+
+    // Get top 5 users from the leaderboard
+    let top_5: RedisResult<Vec<String>> = conn.zrevrange("leaderboard", 0, 4).await;
+
+    // Get the user's position
+    let user_position: RedisResult<Option<u32>> = conn
+        .zrevrank("leaderboard", auth_guard.user_id.to_owned())
+        .await;
+
+    if top_5.is_err() || user_position.is_err() {
+        error!(data.log, "Redis error"; "error" => top_5.err().unwrap().to_string());
+        return HttpResponse::InternalServerError().json(ResponseMsg {
+            status: "error".to_string(),
+            message: "Internal server error".to_string(),
+        });
+    }
+
+    let mut user_ids = top_5.unwrap();
+    user_ids.push(auth_guard.user_id.to_owned());
+    let user_position = user_position.unwrap();
+    let mut users: Vec<LbResponse> = Vec::new();
+
+    let mut rank: u32 = 1;
+    for user_id in user_ids {
+        if user_id == auth_guard.user_id {
+            rank = user_position.unwrap() + 1;
+        }
+        let user_data: RedisResult<Vec<u32>> = conn
+            .hget(format!("user:{}", user_id), &["accuracy", "highscore"])
+            .await;
+        let profile = data
+            .redis
+            .get_profile(user_id.to_owned(), &data)
+            .await
+            .unwrap();
+        match user_data {
+            Ok(user_data) => {
+                let user = LbResponse {
+                    rank,
+                    name: profile.name,
+                    pfp: profile.picture,
+                    accuracy: user_data[0],
+                    highscore: user_data[1],
+                };
+                users.push(user);
+                rank += 1;
+            }
+            Err(e) => {
+                error!(data.log, "Redis error"; "error" => e.to_string());
+                return HttpResponse::InternalServerError().json(ResponseMsg {
+                    status: "error".to_string(),
+                    message: "Internal server error".to_string(),
+                });
+            }
+        }
+    }
+
+    HttpResponse::Ok().json(serde_json::json!({
+        "status": "success",
+        "message": "Leaderboard fetched",
+        "data": users}))
+}
+
+// Upload data to the leaderboard
+#[post("/leaderboard")]
+async fn upload_leaderboard_handler(
+    auth_guard: AuthenticationGuard,
+    data: web::Data<AppState>,
+    body: web::Json<LbData>,
+) -> impl Responder {
+    let user_id = auth_guard.user_id.to_owned();
+    let body = body.into_inner();
+    let mut conn = data.redis.get_conn_async();
+
+    debug!(data.log, "Leaderboard data"; "user_id" => &user_id, "accuracy" => body.accuracy, "highscore" => body.highscore);
+    // Upload name accurecy and highscore to the permanet user data
+    let _: RedisResult<()> = conn
+        .hset_multiple(
+            format!("user:{}", user_id.to_owned()),
+            &[
+                ("accuracy", body.accuracy.to_string()),
+                ("highscore", body.highscore.to_string()),
+            ],
+        )
+        .await;
+
+    // Calculate the new leaderboard score
+    let score = (body.highscore - 1000) + (100 - body.accuracy);
+
+    // Upload the new score to the leaderboard
+    let result: RedisResult<usize> = conn.zadd("leaderboard", user_id.to_owned(), score).await;
+    match result {
+        Ok(_) => HttpResponse::Ok().json(ResponseMsg {
+            status: "success".to_string(),
+            message: "Leaderboard updated".to_string(),
+        }),
+        Err(e) => {
+            error!(data.log, "Redis error"; "error" => e.to_string());
+            HttpResponse::InternalServerError().json(ResponseMsg {
+                status: "error".to_string(),
+                message: "Internal server error".to_string(),
+            })
+        }
+    }
 }
 
 #[get("/login")]
@@ -55,6 +168,7 @@ async fn jwt_refresh_handler(
         .path("/")
         .max_age(ActixWebDuration::new(data.config.jwt_max_age, 0))
         .http_only(true)
+        .same_site(SameSite::Strict)
         .finish();
     let cookie2 = Cookie::build("login", "true")
         .path("/")
@@ -133,6 +247,7 @@ async fn google_oauth_handler(
         .path("/")
         .max_age(ActixWebDuration::new(data.config.jwt_max_age, 0))
         .http_only(true)
+        .same_site(SameSite::Strict)
         .finish();
     let cookie2 = Cookie::build("login", "true")
         .path("/")
@@ -156,6 +271,7 @@ async fn logout_handler(
         .path("/")
         .max_age(ActixWebDuration::new(-1, 0))
         .http_only(true)
+        .same_site(SameSite::Strict)
         .finish();
 
     let cookie2 = Cookie::build("login", "")
@@ -167,10 +283,6 @@ async fn logout_handler(
     // Remove user from db
     data.redis
         .delete_profile(auth_guard.user_id.to_owned())
-        .await;
-    let mut con = data.redis.get_conn_async();
-    let _: RedisResult<u8> = con
-        .hdel(format!("user:{}", auth_guard.user_id), "refresh_token")
         .await;
 
     HttpResponse::Found()
@@ -187,7 +299,7 @@ async fn get_me_handler(
 ) -> impl Responder {
     let user = data
         .redis
-        .get_profile(auth_guard.user_id.to_owned())
+        .get_profile(auth_guard.user_id.to_owned(), &data)
         .await
         .unwrap();
     let json_response = UserResponse {
@@ -205,6 +317,8 @@ pub fn config(cfg: &mut web::ServiceConfig) {
             .service(oauth_url_handler)
             .service(google_oauth_handler)
             .service(logout_handler)
+            .service(upload_leaderboard_handler)
+            .service(leaderboard_handler)
             .service(get_me_handler),
     );
 }
