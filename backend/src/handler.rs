@@ -116,7 +116,28 @@ async fn upload_leaderboard_handler(
         .await;
 
     // Calculate the new leaderboard score
-    let score = (body.highscore - 1000) + (100 - body.accuracy);
+    let score = if body.highscore < 1000 {
+        100 - body.accuracy
+    } else {
+        (body.highscore - 1000) + (100 - body.accuracy)
+    };
+
+    // Get the previous score and compare it with the new score
+    let prev_score: RedisResult<Option<u32>> = conn.zscore("leaderboard", user_id.to_owned()).await;
+    if prev_score.is_err() {
+        error!(data.log, "Redis error"; "error" => prev_score.err().unwrap().to_string());
+        return HttpResponse::InternalServerError().json(ResponseMsg {
+            status: "error".to_string(),
+            message: "Internal server error".to_string(),
+        });
+    }
+    let prev_score = prev_score.unwrap();
+    if prev_score.is_some() && (prev_score.unwrap() > score) {
+        return HttpResponse::Ok().json(ResponseMsg {
+            status: "success".to_string(),
+            message: "Leaderboard updated".to_string(),
+        });
+    }
 
     // Upload the new score to the leaderboard
     let result: RedisResult<usize> = conn.zadd("leaderboard", user_id.to_owned(), score).await;

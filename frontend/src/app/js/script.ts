@@ -1,7 +1,7 @@
 import Cookies from 'js-cookie';
 import { setupRefreshTimer } from './task';
 import { plotInit } from './plot';
-import { handleUserInput } from './player';
+import { handleUserInput, handleRestart, eventLeftRightButton } from './player';
 import { createLeaderboard } from './leaderbord';
 
 function setProfile() {
@@ -41,29 +41,9 @@ function openPopup(popupContent: string) {
     $(".content").addClass("disable-interaction");
 }
 
-
-function doKeyPressEffect(buttonId: string) {
-    // Add key press effect to left and right button
-    var btn = $("#" + buttonId);
-    btn.addClass("key-pressed");
-    setTimeout(function () {
-        btn.removeClass("key-pressed");
-    }, 100);
-}
-
 $(function () {
-
     // Add keyboard event listener for left and right button
-    $(document).on('keydown', (e) => {
-        if (e.key == "ArrowLeft") {
-            handleUserInput("left");
-            doKeyPressEffect("left");
-        }
-        else if (e.key == "ArrowRight") {
-            handleUserInput("right");
-            doKeyPressEffect("right");
-        }
-    });
+    $(document).on('keydown', eventLeftRightButton);
 
     if (nav.length) {
         const toggle = nav.find(".nav-toggle");
@@ -120,6 +100,10 @@ $(function () {
             </div>`;
         else if (buttonId == "left" || buttonId == "right") {
             handleUserInput(buttonId);
+            return;
+        }
+        else if (buttonId == "restart") {
+            handleRestart();
             return;
         }
         else if (buttonId == "lb-btn") {

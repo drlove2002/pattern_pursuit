@@ -48,8 +48,8 @@ export function handleUserInput(buttonId: string) {
     gramBuffer.shift();
 
     // update chart data
-    var round = correct + wrong;
-    updateChart(round, playerBal);
+    var total_steps = correct + wrong;
+    updateChart(total_steps, playerBal);
 
     predictNext();
 }
@@ -70,10 +70,11 @@ function updateHighestEarning() {
     $("#highest-earning").html(highestEarning + "$");
 }
 
-function disableButtons() {
+function hideButtons() {
     // Set attribure disabled to true using jQuery
-    $("#left").attr("disabled", "true");
-    $("#right").attr("disabled", "true");
+    $("#left").addClass("hide");
+    $("#right").addClass("hide");
+    $("#restart").removeClass("hide");
 }
 
 // Check if game is over
@@ -91,8 +92,16 @@ function updateUI() {
 // Game over
 function onGameOver() {
     // Disable buttons and keydown event
-    $(document).off('keydown');
-    disableButtons();
+    $(document).off('keydown', eventLeftRightButton)
+    $(document).on('keydown', (e) => {
+        if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+            e.preventDefault();
+        }
+        if (e.key === "Enter") {
+            handleRestart();
+        }
+    });
+    hideButtons();
 
     // Update data to server
     $.ajax({
@@ -102,4 +111,55 @@ function onGameOver() {
         contentType: "application/json; charset=utf-8",
         dataType: "json",
     });
+}
+
+// Handle restart
+export function handleRestart() {
+    // Reset variables
+
+    playerBal = 1000;
+    botBal = 1000;
+    highestEarning = 0;
+    correct = 0;
+    wrong = 0;
+    prediction = Math.floor(Math.random() * 2);
+    lastKey = 0;
+    gramBuffer = [0, 1, 0, 1, 0];
+    historyIndex = gramBuffer[0] * 16 + gramBuffer[1] * 8 + gramBuffer[2] * 4 + gramBuffer[3] * 2 + gramBuffer[4];
+
+    for (let i = 0; i < 32; i++) { gramHistory[i] = { counter0: 0, counter1: 0 }; }
+    updateUI();
+    // Reset chart
+    updateChart(0, playerBal);
+
+    // Enable buttons
+    $("#left").removeClass("hide");
+    $("#right").removeClass("hide");
+    $("#restart").addClass("hide");
+
+    $(document).off('keydown')
+    $(document).on('keydown', eventLeftRightButton);
+}
+
+export function eventLeftRightButton(e: any) {
+    if (e.key == "ArrowLeft") {
+        handleUserInput("left");
+        doKeyPressEffect("left");
+    }
+    else if (e.key == "ArrowRight") {
+        handleUserInput("right");
+        doKeyPressEffect("right");
+    }
+    else if (e.key == "Enter") {
+        e.preventDefault();
+    }
+}
+
+function doKeyPressEffect(buttonId: string) {
+    // Add key press effect to left and right button
+    var btn = $("#" + buttonId);
+    btn.addClass("key-pressed");
+    setTimeout(function () {
+        btn.removeClass("key-pressed");
+    }, 100);
 }

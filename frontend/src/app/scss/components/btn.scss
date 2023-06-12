@@ -16,6 +16,10 @@
     line-height: 1;
     color: var(--glass-gray-2);
 
+    &.hide {
+        display: none;
+    }
+
     &:hover {
         cursor: pointer;
     }
