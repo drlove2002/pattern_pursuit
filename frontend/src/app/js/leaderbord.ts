@@ -6,6 +6,7 @@ export type Leaderboard = {
     pfp: string,
     highscore: number,
     accuracy: number
+    steps: number
 }
 
 function getLeaderbordData(): Promise<Leaderboard[]> {
@@ -26,7 +27,8 @@ function getLeaderbordData(): Promise<Leaderboard[]> {
                         name: data[i].name,
                         pfp: data[i].pfp,
                         highscore: data[i].highscore,
-                        accuracy: data[i].accuracy
+                        accuracy: data[i].accuracy,
+                        steps: data[i].steps
                     });
                 }
 
@@ -49,6 +51,7 @@ function createLeaderboardTableHeader(): string {
         <th>Name</th>
         <th>Highest Earning</th>
         <th>Bot Accuracy</th>
+        <th>Steps Survived</th>
     </tr>
     `;
 }
@@ -67,6 +70,7 @@ function createLeaderboardTable(leaderboard: Leaderboard[]): string {
             <td>${leaderboard[i].name}</td>
             <td>${leaderboard[i].highscore}$</td>
             <td>${leaderboard[i].accuracy}%</td>
+            <td>${leaderboard[i].steps}</td>
         </tr>
         `;
     }

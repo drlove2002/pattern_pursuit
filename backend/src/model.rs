@@ -44,6 +44,7 @@ pub struct TokenClaims {
 pub struct LbData {
     pub accuracy: u32,
     pub highscore: u32,
+    pub steps: u32,
 }
 
 #[derive(Debug, Deserialize)]
@@ -64,6 +65,7 @@ pub struct LbResponse {
     pub pfp: String,
     pub accuracy: u32,
     pub highscore: u32,
+    pub steps: u32,
 }
 
 #[derive(Serialize, Debug)]

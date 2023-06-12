@@ -109,7 +109,11 @@ function onGameOver() {
     $.ajax({
         url: "/api/leaderboard",
         type: "POST",
-        data: JSON.stringify({ "highscore": highestEarning, "accuracy": Math.round(correct / (correct + wrong + 0.0001) * 100) }),
+        data: JSON.stringify({
+            "highscore": highestEarning,
+            "accuracy": Math.round(correct / (correct + wrong + 0.0001) * 100),
+            "steps": correct + wrong
+        }),
         contentType: "application/json; charset=utf-8",
         dataType: "json",
     });

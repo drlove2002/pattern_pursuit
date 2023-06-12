@@ -57,7 +57,10 @@ async fn leaderboard_handler(
             rank = user_position.unwrap() + 1;
         }
         let user_data: RedisResult<Vec<u32>> = conn
-            .hget(format!("user:{}", user_id), &["accuracy", "highscore"])
+            .hget(
+                format!("user:{}", user_id),
+                &["accuracy", "highscore", "steps"],
+            )
             .await;
         let profile = data
             .redis
@@ -72,6 +75,7 @@ async fn leaderboard_handler(
                     pfp: profile.picture,
                     accuracy: user_data[0],
                     highscore: user_data[1],
+                    steps: user_data[2],
                 };
                 users.push(user);
                 rank += 1;
@@ -103,7 +107,14 @@ async fn upload_leaderboard_handler(
     let body = body.into_inner();
     let mut conn = data.redis.get_conn_async();
 
-    debug!(data.log, "Leaderboard data"; "user_id" => &user_id, "accuracy" => body.accuracy, "highscore" => body.highscore);
+    debug!(
+        data.log,
+        "Leaderboard data";
+        "user_id" => &user_id,
+        "accuracy" => body.accuracy,
+        "highscore" => body.highscore,
+        "steps" => body.steps
+    );
     // Upload name accurecy and highscore to the permanet user data
     let _: RedisResult<()> = conn
         .hset_multiple(
@@ -111,15 +122,16 @@ async fn upload_leaderboard_handler(
             &[
                 ("accuracy", body.accuracy.to_string()),
                 ("highscore", body.highscore.to_string()),
+                ("steps", body.steps.to_string()),
             ],
         )
         .await;
 
     // Calculate the new leaderboard score
     let score = if body.highscore < 1000 {
-        100 - body.accuracy
+        100 - body.accuracy + body.steps
     } else {
-        (body.highscore - 1000) + (100 - body.accuracy)
+        (body.highscore - 1000) + (100 - body.accuracy) + body.steps
     };
 
     // Get the previous score and compare it with the new score
