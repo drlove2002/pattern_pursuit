@@ -17,4 +17,33 @@
             font-size: rem(35);
         }
     }
+
+    .score-animation {
+        position: absolute;
+        font-size: rem(25);
+        font-weight: bold;
+        animation: flyaway 1s linear;
+    }
+
+    .score-animation.increase {
+        color: #00ff00;
+        /* Green color */
+    }
+
+    .score-animation.decrease {
+        color: #ff0000;
+        /* Red color */
+    }
+
+    @keyframes flyaway {
+        0% {
+            opacity: 1;
+            transform: translate(0, 0);
+        }
+
+        100% {
+            opacity: 0;
+            transform: translate(0, -200px);
+        }
+    }
 }

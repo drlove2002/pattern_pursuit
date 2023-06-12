@@ -28,10 +28,12 @@ export function handleUserInput(buttonId: string) {
         playerBal -= winReward;
         correct++;
         botBal += winReward;
+        addFlotingScore(-winReward);
     } else {
         playerBal += winReward;
         wrong++;
         botBal -= winReward;
+        addFlotingScore(winReward);
     }
     updateHighestEarning();
     if (checkGameOver()) {
@@ -163,3 +165,29 @@ function doKeyPressEffect(buttonId: string) {
         btn.removeClass("key-pressed");
     }, 100);
 }
+
+const aria = $("#choices");
+
+// Add floating score eliment to the screen
+function addFlotingScore(amount: number) {
+
+    const animationClass = amount > 0 ? "increase" : "decrease";
+    const randomX = Math.random() * aria.outerWidth() - 50;
+    const randomY = Math.random() * aria.outerHeight();
+
+    const animationElement = $('<div>', {
+        text: amount > 0 ? `+${amount}` : `${amount}`,
+        class: `score-animation ${animationClass}`,
+        css: {
+            left: randomX,
+            top: randomY,
+        },
+    });
+
+    aria.append(animationElement);
+
+    setTimeout(() => {
+        animationElement.remove();
+    }, 1000);
+}
+
