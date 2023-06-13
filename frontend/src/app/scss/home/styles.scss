@@ -1,0 +1,271 @@
+div.heading {
+    position: absolute;
+    left: 4rem;
+    top: 5rem;
+    font-family: OS_500;
+    font-weight: 600;
+    font-size: 1.5vw;
+    letter-spacing: 4px;
+}
+
+div.hero__img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    translate: -50% -50%;
+    z-index: -1;
+    & > img {
+        aspect-ratio: unset;
+        width: 40vw;
+
+        &[class="second"] {
+            width: 33vw;
+        }
+    }
+}
+
+body > a#skip__btn {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    position: fixed;
+    right: 4rem;
+    bottom: 5rem;
+    width: fit-content;
+    padding: 0.5rem 0.3rem;
+    text-decoration: none;
+    color: white;
+    text-transform: uppercase;
+    font-family: "DM Sans", sans-serif;
+    letter-spacing: 4px;
+    z-index: 1;
+
+    & > img {
+        aspect-ratio: 1 / 1;
+        height: 1.8rem;
+    }
+}
+
+main#main {
+    width: 100%;
+    margin-inline: auto;
+    position: relative;
+    height: 100vh;
+    overflow-y: scroll;
+    scroll-snap-type: y mandatory;
+
+    section.main__sections {
+        height: 100vh;
+        scroll-snap-align: center;
+        scroll-snap-stop: always;
+        position: relative;
+
+        &:first-child {
+            display: grid;
+            place-items: center;
+
+            & > div.hero__container {
+                & > .hero__text__container > h1 {
+                    text-align: center;
+                    line-height: 1;
+                    font-family: OS_400;
+                    font-weight: 300;
+                    text-transform: uppercase;
+                    font-size: 5.8vw;
+                    letter-spacing: 3px;
+                }
+            }
+        }
+
+        &:nth-child(2),
+        &:nth-child(4) {
+            display: grid;
+            place-items: center;
+            padding: 2rem;
+
+            & > div.text__container {
+                width: 75%;
+                text-align: center;
+
+                & > span {
+                    font-family: OS_400;
+                    font-weight: 300;
+                    font-size: 2.4vw;
+                    line-height: 1.5;
+                    letter-spacing: 1px;
+                    color: #beb0fa;
+                    opacity: 0;
+                    transition: all 1.5s ease;
+                }
+            }
+
+            & > img {
+                position: absolute;
+                aspect-ratio: unset;
+                width: 11vw;
+
+                &:first-child {
+                    top: 2rem;
+                    left: 3rem;
+                }
+
+                &:last-child {
+                    bottom: 2rem;
+                    right: 3rem;
+                    rotate: 185deg;
+                }
+            }
+        }
+
+        &:nth-child(4) > img {
+            width: 8.8vw;
+        }
+
+        &:nth-child(3) {
+            display: grid;
+            place-items: center;
+
+            & > div.hero__container {
+                width: 75%;
+                text-align: center;
+
+                & > span {
+                    display: inline-block;
+                    position: relative;
+                    font-size: 5vw;
+                    text-transform: uppercase;
+                    line-height: 0.9;
+                }
+            }
+        }
+
+        &:nth-child(5) {
+            display: flex;
+            align-items: space-between;
+            justify-content: center;
+            padding: 4rem 5rem;
+            gap: 2rem;
+
+            & > div.left__container {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+                justify-content: space-around;
+                flex: 1;
+                padding: 0 2rem;
+            }
+
+            & > div.left__container > div.top__container {
+                grid-area: LT;
+                display: flex;
+                padding: 0 2rem;
+                flex-direction: column;
+                align-items: flex-start;
+                justify-content: center;
+                gap: 2rem;
+
+                & > span:first-child {
+                    font-size: 4vw;
+                    font-weight: 600;
+                    font-family: OS_500;
+                }
+
+                & > span:last-child {
+                    font-size: 2vw;
+                    font-family: OS_400;
+                    font-weight: 600;
+                    color: #beb0fa;
+                }
+            }
+
+            & > div.left__container > div.bottom__container {
+                grid-area: LB;
+                padding: 2rem;
+
+                & > div.btn > a {
+                    text-decoration: none;
+                    color: white;
+                    background-color: #06002e;
+                    width: fit-content;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 1rem;
+                    padding: 1rem 2rem;
+                    align-self: flex-end;
+                    cursor: pointer;
+                    position: relative;
+                    border-radius: .5rem;
+                    
+                    & > span {
+                        font-size: 1.5vw;
+                        font-weight: 600;
+                        font-family: OS_500;
+                        text-transform: uppercase;
+                        letter-spacing: 2px;
+                    }
+                    
+                    & > img {
+                        aspect-ratio: 1 / 1;
+                        height: 1.6rem;
+                    }
+                    
+                    &::before,
+                    &::after {
+                        content: "";
+                        position: absolute;
+                        inset: -1px;
+                        border-radius: inherit;
+                        background: conic-gradient(
+                            from var(--gradient-angle),
+                            var(--clr-1),
+                            var(--clr-2),
+                            var(--clr-3),
+                            var(--clr-2),
+                            var(--clr-1)
+                            );
+                            animation: rotation 10s linear infinite;
+                            z-index: -1;
+                        }
+                        
+                        &::after {
+                            transition: all .5s ease;
+                            filter: blur(1rem);
+                        }
+
+                    &:hover {
+                        &::after {
+                            filter: blur(1.5rem);
+                        }
+                    }
+                }
+            }
+
+            & > div.img__container {
+                grid-area: RF;
+                position: relative;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+
+                & > img {
+                    &:first-child {
+                        position: absolute;
+                        z-index: 2;
+                        inset: 10% 50% 70% 50%;
+                        translate: -25% -15%;
+                        width: 10vw;
+                        rotate: -235deg;
+                    }
+                    &:last-child {
+                        position: inherit;
+                        z-index: 3;
+                        width: 25vw;
+                        margin-top: 10rem;
+                    }
+                }
+            }
+        }
+    }
+}

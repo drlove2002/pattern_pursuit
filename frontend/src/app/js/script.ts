@@ -16,16 +16,10 @@ function setProfile() {
         $("#profile-picture").attr("src", data.picture);
         $("#profile-name").html(data.name);
         $("#profile-email").html(data.email);
-
-        // Make sign-in button to sign-out button
-        const login = $("#login");
-        login.attr("id", "logout");
-        login.find(".button__text").html("Sign out");  // TODO: Remove this code section because it is not needed
-    }).fail(function (data) {
+    }).fail(function (e) {
         // If fail, remove cookie
         Cookies.remove("login");
-        Cookies.remove("token");
-        location.reload(); // TODO: Redirect to home page
+        location.replace("/api/login");
     })
 }
 
@@ -63,25 +57,8 @@ $(function () {
         }
     }
 
-    // If user is not logged in, show login button in popup
-    if (!Cookies.get("login") || Cookies.get("login") == "false") {
-        var popupContent =
-            `<h2>Before continuing you must login.</h2>
-            <div class="google-btn">
-            <a href="/api/login">
-            <div class="google-icon-wrapper">
-            <img class="google-icon" src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="google icon"/>
-            </div>
-            <p class="btn-text"><b>Sign in with google</b></p>
-            </a>
-            </div>`;
-        popup.find(".popup-close").hide();
-        openPopup(popupContent);
-    }
-
-
     // Make a function to open popup window with contains
-    $(".button").on('click', (e) => {
+    $("button").on('click', (e) => {
         // Return case
         if (popup.hasClass("is-active"))
             return;
@@ -135,10 +112,12 @@ $(function () {
 
     //  Update the profile picture and name when user logged in
     // Chech if we have token in cache
-    if (Cookies.get("login")) {
+    if (Cookies.get("login") && Cookies.get("login") == "true") {
         setProfile();
         setupRefreshTimer();
-    } // TODO: Redirect to home page if not logged in
+    }
+    else
+        location.replace("/");
 
     plotInit();
 });

@@ -1,0 +1,73 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans&display=swap");
+
+@font-face {
+    font-family: OS_400;
+    src: url(../assets/fonts/OpenSauceSans-Regular.ttf);
+}
+
+@font-face {
+    font-family: OS_500;
+    src: url(../assets/fonts/OpenSauceSans-SemiBold.ttf);
+}
+
+@property --gradient-angle {
+    syntax: "<angle>";
+    initial-value: 0deg;
+    inherits: false;
+}
+
+:root {
+    color-scheme: light dark;
+    color: rgba(255, 255, 255, 0.87);
+    background-color: #06002e;
+
+    --gradient-angle: 0deg;
+    --clr-1: #6a13be;
+    --clr-2: #816be0;
+    --clr-3: #53f2fd;
+}
+
+::-webkit-scrollbar {
+    display: none;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: OS_400;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+body {
+    padding-inline: 5%;
+}
+
+.appear {
+    opacity: 1 !important;
+}
+
+.hide {
+    opacity: 0 !important;
+}
+
+#H_ONE {
+    opacity: 0;
+    translate: 0 40%;
+    transition: all 1.5s ease;
+}
+
+.pop {
+    opacity: 1 !important;
+    translate: 0 0 !important;
+}
+
+
+@media (prefers-color-scheme: light) {
+    :root {
+        color: #06002e;
+        background-color: #ffffff;
+    }
+}

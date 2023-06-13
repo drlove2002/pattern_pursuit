@@ -2,129 +2,93 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preload" as="style"
-        href="https://fonts.googleapis.com/css2?family=Martel+Sans:wght@300;400;700&display=swap"
-        onload="this.onload=null;this.rel='stylesheet'">
-
-    <link rel="shortcut icon" href="assets/favicon.ico" type="image/x-icon">
-    <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png">
-    <link rel="manifest" href="assets/site.webmanifest">
-    <link rel="stylesheet" href="css/style.css">
-
-    <title>Randomness</title>
+  <link rel="shortcut icon" href="assets/favicon.ico" type="image/x-icon">
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png">
+  <link rel="manifest" href="assets/site.webmanifest">
+  <link rel="stylesheet" href="css/index.css">
+  <title>Pattern Pursuit | Home</title>
 </head>
 
 <body>
-    <div id="video-background">
-        <video autoplay loop muted>
-            <source src="assets/roulette.mp4" type="video/mp4">
-        </video>
-    </div>
-    <div class="nav-container is-active" tabindex="0">
-        <!-- TODO: remove is-active after finishing nav bar desining-->
-        <div class="nav-toggle"></div>
-        <nav class="nav-items">
-            <div class="profile-container">
-                <img src="https://cdn-icons-png.flaticon.com/512/953/953789.png" alt="profile-pic"
-                    referrerpolicy="no-referrer" id="profile-picture">
-                <div class="info">
-                    <span id="profile-name">User Name</span>
-                    <span id="profile-email">email@email.com</span>
-                </div>
-            </div>
-            <div class="btn-container">
-                <button type="button" id="help" class="button">
-                    <span class="button__icon">
-                        <ion-icon name="help-circle"></ion-icon>
-                    </span>
-                    Help
-                </button>
-                <a href="/api/oauth/logout" id="logout" class="button">
-                    <span class="button__icon">
-                        <ion-icon name="log-out"></ion-icon>
-                    </span>
-                    Sign Out
-                </a>
-                <button type="button" id="lb-btn" class="button">
-                    <span class="button__icon">
-                        <ion-icon name="shapes"></ion-icon>
-                    </span>
-                    Leaderboard
-                </button>
-            </div>
-        </nav>
-    </div>
-    <div id="popup-window">
-        <div class="popup-close x-close">&times;</div>
-        <div class="popup-content"></div>
-    </div>
-    <div class="content">
-        <div id="plot"></div>
-        <div id="score">
-            <img id="bot-gif" src="assets/robot.webp" alt="Bot Hovering">
-            <div class="inner-score">
-                <div class="icon container">
-                    <img class="card-icon" src="https://cdn-icons-png.flaticon.com/512/639/639365.png"
-                        alt="Player Balance">
-                    <img class="card-icon" src="https://cdn-icons-png.flaticon.com/512/639/639365.png"
-                        alt="Bot Balance">
-                    <img class="card-icon" src="https://cdn-icons-png.flaticon.com/512/735/735734.png"
-                        alt="Bot Accuracy">
-                    <img class="card-icon" src="https://cdn-icons-png.flaticon.com/512/3884/3884708.png"
-                        alt="Highest Earning">
-                </div>
-                <div class="title container">
-                    <h5 class="card-title" id="player-balance-lable">Your Balance</h5>
-                    <h5 class="card-title" id="bot-balance-lable">My Balance</h5>
-                    <h5 class="card-title" id="bot-accuracy-lable">My Accuracy</h5>
-                    <h5 class="card-title" id="highest-earning-lable">Highest Earning</h5>
-                </div>
-                <div class="body container">
-                    <h5 class="card-body" id="player-balance">1000$</h5>
-                    <h5 class="card-body" id="bot-balance">1000$</h5>
-                    <h5 class="card-body" id="bot-accuracy">0%</h5>
-                    <h5 class="card-body" id="highest-earning">0$</h5>
-                </div>
-            </div>
+  <a href="#login" id="skip__btn" style="transition: opacity .15s ease;">
+    <span>Skip</span>
+    <img src="assets/icons/arrow-circle-right.png" alt="Right Arrow">
+  </a>
+  <main id="main">
+    <section class="main__sections">
+      <div class="heading">PatternPursuit</div>
+      <div class="hero__img">
+        <img src="assets/gif/c35e66dcc624edcf5432e90a8bc96345.gif" alt="Flowting Liquid">
+      </div>
+      <div class="hero__container" id="pop__up">
+        <div class="hero__text__container">
+          <h1 class="hero__text__content">Unraveling Human</h1>
+          <h1 class="hero__text__content">Predictability</h1>
         </div>
-        <div id="choices">
-            <button type="button" id="left" class="button">
-                <span class="button__icon">
-                    <ion-icon name="caret-back-circle-outline"></ion-icon>
-                </span>
-                Left
-            </button>
-
-            <button type="button" id="right" class="button">
-                Right
-                <span class="button__icon">
-                    <ion-icon name="caret-forward-circle-outline"></ion-icon>
-                </span>
-            </button>
-
-            <button type="button" id="restart" class="button hide">
-                Restart
-                <span class="button__icon">
-                    <ion-icon name="repeat-outline"></ion-icon>
-                </span>
-            </button>
+      </div>
+    </section>
+    <section class="main__sections">
+      <img src="assets/gif/3b36834452c5c45ef8a10efac1489036.gif" alt="Flowting Liquid">
+      <div class="text__container">
+        <span class="T">
+          Ever wondered how predictable you are? What if I told you I can anticipate your behavior based on your past
+          choices? Let's make it challenging for me to predict you. Choose between heads or tails, and I'll attempt to
+          guess your decision. The more you vary your choices, the harder it becomes for me to decipher your pattern.
+          Using a statistical algorithm called 5-gram, I'll work my magic.
+        </span>
+      </div>
+      <img src="assets/gif/3b36834452c5c45ef8a10efac1489036.gif" alt="Flowting Liquid">
+    </section>
+    <section class="main__sections">
+      <div class="heading">PatternPursuit</div>
+      <div class="hero__img">
+        <img class="second" src="assets/gif/3200ec4516d57298a960d3678bd5dbcd.gif" alt="Flowting Liquid">
+      </div>
+      <div class="hero__container" id="observed">
+        <span id="H_ONE">
+          Can you prove yourself to be truly unpredictable?
+        </span>
+      </div>
+    </section>
+    <section class="main__sections">
+      <img src="assets/gif/30462c3c74a4c7dac640fa09390f08c6.gif" alt="Flowting Liquid">
+      <div class="text__container">
+        <span class="T">
+          The rules are simple: you'll be presented with a choice between "left" or "right". My task is to guess your
+          selection before it's revealed. If I guess right, I take some money from you. But if I guess wrong, you'll get
+          money from me. The key is to outsmart me by being as random as possible, which will help you earn more money.
+        </span>
+      </div>
+      <img src="assets/gif/30462c3c74a4c7dac640fa09390f08c6.gif" alt="Flowting Liquid">
+    </section>
+    <section class="main__sections" id="login">
+      <div class="left__container">
+        <div class="top__container">
+          <span>Are you up for the challenge? </span>
+          <span>Let the game begin, and may luck be on your side!</span>
         </div>
-    </div>
-    <!-- Scripts -->
-    <script type="module" src="https://unpkg.com/ionicons@5.0.0/dist/ionicons/ionicons.esm.js"></script>
-    <script src="https://code.jquery.com/jquery-3.7.0.min.js"
-        integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
-    <script src="https://cdn.plot.ly/plotly-2.20.0.min.js" charset="utf-8"></script>
-    <script src="js/script.js"></script>
+        <div class="bottom__container">
+          <div class="btn">
+            <a href="/api/login">
+              <span>Login</span>
+              <img src="assets/icons/sign-in-alt.png" alt="Sign In Icon">
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="img__container">
+        <img src="assets/gif/031ef585f60d6fbd5cff2cf5c53f1656.gif" alt="Flowting Liquid">
+        <img src="assets/gif/3200ec4516d57298a960d3678bd5dbcd.gif" alt="Flowting Liquid">
+      </div>
+    </section>
+  </main>
+  <script type="module" src="js/index.js"></script>
 </body>
 
 </html>

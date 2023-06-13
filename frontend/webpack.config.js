@@ -2,9 +2,12 @@ const path = require('path');
 const TerserPlugin = require('terser-webpack-plugin');
 
 module.exports = {
-    entry: './src/app/js/script.ts',
+    entry: {
+        script: './src/app/js/script.ts',
+        index: './src/app/js/index.ts',
+    },
     output: {
-        filename: 'script.js',
+        filename: '[name].js',
         path: path.resolve(__dirname, 'static/js'),
     },
     module: {
