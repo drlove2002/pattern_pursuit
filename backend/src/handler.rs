@@ -8,7 +8,7 @@ use crate::{
 };
 use actix_web::{
     cookie::{time::Duration as ActixWebDuration, Cookie, SameSite},
-    get, post, web, HttpResponse, Responder,
+    get, post, web, HttpRequest, HttpResponse, Responder,
 };
 use redis::AsyncCommands;
 use redis::RedisResult;
@@ -169,7 +169,15 @@ async fn upload_leaderboard_handler(
 }
 
 #[get("/login")]
-async fn oauth_url_handler(data: web::Data<AppState>) -> impl Responder {
+async fn oauth_url_handler(req: HttpRequest, data: web::Data<AppState>) -> impl Responder {
+    // Get login cookies
+    let cookie = req.cookie("login");
+    if cookie.is_some() && cookie.unwrap().value() == "true" {
+        return HttpResponse::Found()
+            .append_header((LOCATION, "/play.html"))
+            .finish();
+    }
+
     let mut url = Url::parse("https://accounts.google.com/o/oauth2/v2/auth").unwrap();
 
     url.query_pairs_mut()
@@ -289,7 +297,7 @@ async fn google_oauth_handler(
         .finish();
 
     HttpResponse::Found()
-        .append_header((LOCATION, data.config.client_origin.to_owned()))
+        .append_header((LOCATION, "/play.html"))
         .cookie(cookie)
         .cookie(cookie2)
         .finish()

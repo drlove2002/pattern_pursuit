@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" as="style"
+        href="https://fonts.googleapis.com/css2?family=Martel+Sans:wght@300;400;700&display=swap"
+        onload="this.onload=null;this.rel='stylesheet'">
+
+    <link rel="shortcut icon" href="assets/favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png">
+    <link rel="manifest" href="assets/site.webmanifest">
+    <link rel="stylesheet" href="css/style.css">
+
+    <title>Pattern Pursuit | Play</title>
+</head>
+
+<body>
+    <div id="video-background">
+        <video autoplay loop muted>
+            <source src="assets/roulette.mp4" type="video/mp4">
+        </video>
+    </div>
+    <div class="nav-container" tabindex="0">
+        <div class="nav-toggle"></div>
+        <nav class="nav-items">
+            <div class="profile-container">
+                <img src="https://cdn-icons-png.flaticon.com/512/953/953789.png" alt="profile-pic"
+                    referrerpolicy="no-referrer" id="profile-picture">
+                <div class="info">
+                    <span id="profile-name">User Name</span>
+                    <span id="profile-email">email@email.com</span>
+                </div>
+            </div>
+            <div class="btn-container">
+                <button type="button" id="help" class="button">
+                    <span class="button__icon">
+                        <ion-icon name="help-circle"></ion-icon>
+                    </span>
+                    Help
+                </button>
+                <a href="/api/oauth/logout" id="logout" class="button">
+                    <span class="button__icon">
+                        <ion-icon name="log-out"></ion-icon>
+                    </span>
+                    Sign Out
+                </a>
+                <button type="button" id="lb-btn" class="button">
+                    <span class="button__icon">
+                        <ion-icon name="shapes"></ion-icon>
+                    </span>
+                    Leaderboard
+                </button>
+            </div>
+        </nav>
+    </div>
+    <div id="popup-window">
+        <div class="popup-close x-close">&times;</div>
+        <div class="popup-content"></div>
+    </div>
+    <div class="content">
+        <div id="plot"></div>
+        <div id="score">
+            <img id="bot-gif" src="assets/robot.webp" alt="Bot Hovering">
+            <div class="inner-score">
+                <div class="icon container">
+                    <img class="card-icon" src="https://cdn-icons-png.flaticon.com/512/639/639365.png"
+                        alt="Player Balance">
+                    <img class="card-icon" src="https://cdn-icons-png.flaticon.com/512/639/639365.png"
+                        alt="Bot Balance">
+                    <img class="card-icon" src="https://cdn-icons-png.flaticon.com/512/735/735734.png"
+                        alt="Bot Accuracy">
+                    <img class="card-icon" src="https://cdn-icons-png.flaticon.com/512/3884/3884708.png"
+                        alt="Highest Earning">
+                </div>
+                <div class="title container">
+                    <h5 class="card-title" id="player-balance-lable">Your Balance</h5>
+                    <h5 class="card-title" id="bot-balance-lable">My Balance</h5>
+                    <h5 class="card-title" id="bot-accuracy-lable">My Accuracy</h5>
+                    <h5 class="card-title" id="highest-earning-lable">Highest Earning</h5>
+                </div>
+                <div class="body container">
+                    <h5 class="card-body" id="player-balance">1000$</h5>
+                    <h5 class="card-body" id="bot-balance">1000$</h5>
+                    <h5 class="card-body" id="bot-accuracy">0%</h5>
+                    <h5 class="card-body" id="highest-earning">0$</h5>
+                </div>
+            </div>
+        </div>
+        <div id="choices">
+            <button type="button" id="left" class="button">
+                <span class="button__icon">
+                    <ion-icon name="caret-back-circle-outline"></ion-icon>
+                </span>
+                Left
+            </button>
+
+            <button type="button" id="right" class="button">
+                Right
+                <span class="button__icon">
+                    <ion-icon name="caret-forward-circle-outline"></ion-icon>
+                </span>
+            </button>
+
+            <button type="button" id="restart" class="button hide">
+                Restart
+                <span class="button__icon">
+                    <ion-icon name="repeat-outline"></ion-icon>
+                </span>
+            </button>
+        </div>
+    </div>
+    <!-- Scripts -->
+    <script type="module" src="https://unpkg.com/ionicons@5.0.0/dist/ionicons/ionicons.esm.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"
+        integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+    <script src="https://cdn.plot.ly/plotly-2.20.0.min.js" charset="utf-8"></script>
+    <script src="js/script.js"></script>
+</body>
+
+</html>
