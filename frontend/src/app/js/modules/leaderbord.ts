@@ -1,4 +1,3 @@
-
 // Create leaderboard type
 export type Leaderboard = {
     rank: number,

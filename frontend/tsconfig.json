@@ -8,6 +8,7 @@
         "sourceMap": false,
         "outDir": "static/js",
         "esModuleInterop": true,
+        "resolveJsonModule": true,
         "forceConsistentCasingInFileNames": true,
         "declaration": true,
     },

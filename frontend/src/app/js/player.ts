@@ -1,8 +1,10 @@
 import { updateChart } from './plot';
+import { enqueueMessage } from './utils';
 
 const winReward = 50;
 let highestEarning = 0;
 export let playerBal = 1000;
+let prevBal = playerBal;
 let botBal = 1000;
 var gramBuffer = [0, 1, 0, 1, 0]; // 5-gram buffer
 var gramHistory = {}; // statistics for all 32 5-grams
@@ -12,6 +14,7 @@ var wrong = 0; // total number of wrong guesses
 var prediction = Math.floor(Math.random() * 2); // current prediction (encoded as 0 or 1)
 var lastKey = 0; // last typed key (encoded as 0 or 1)
 
+const getStep = () => (correct + wrong);
 
 function getChoiceAsNum(buttonId: string) {
     return buttonId === "left" ? 0 : 1;
@@ -50,8 +53,7 @@ export function handleUserInput(buttonId: string) {
     gramBuffer.shift();
 
     // update chart data
-    var total_steps = correct + wrong;
-    updateChart(total_steps, playerBal);
+    updateChart(getStep(), playerBal);
 
     predictNext();
 }
@@ -86,13 +88,23 @@ function checkGameOver() {
 
 // Update UI
 function updateUI() {
+    const step = getStep();
     $("#player-balance").html(playerBal + "$");
     $("#bot-balance").html(botBal + "$");
-    $("#bot-accuracy").html(Math.round(correct / (correct + wrong + 0.0001) * 100) + "%");
+    $("#bot-accuracy").html(Math.round(correct / (step + 0.0001) * 100) + "%");
+    if (step && step % 20 === 0) {
+        enqueueMessage(playerBal, prevBal);
+        prevBal = playerBal;
+    }
 }
 
 // Game over
 function onGameOver() {
+    if (playerBal <= 0)
+        enqueueMessage(playerBal, prevBal, "Haha loser, Try again!");
+    else if (botBal <= 0)
+        enqueueMessage(playerBal, prevBal, "Nooo! can't believe you are more random than a random bot.");
+
     // Disable buttons and keydown event
     $(document).off('keydown', eventLeftRightButton)
     $(document).on('keydown', (e) => {
@@ -105,14 +117,15 @@ function onGameOver() {
     });
     hideButtons();
 
+    const step = getStep();
     // Update data to server
     $.ajax({
         url: "/api/leaderboard",
         type: "POST",
         data: JSON.stringify({
             "highscore": highestEarning,
-            "accuracy": Math.round(correct / (correct + wrong + 0.0001) * 100),
-            "steps": correct + wrong
+            "accuracy": Math.round(correct / (step + 0.0001) * 100),
+            "steps": step,
         }),
         contentType: "application/json; charset=utf-8",
         dataType: "json",
@@ -122,21 +135,15 @@ function onGameOver() {
 // Handle restart
 export function handleRestart() {
     // Reset variables
-
-    playerBal = 1000;
-    botBal = 1000;
-    highestEarning = 0;
-    correct = 0;
-    wrong = 0;
+    playerBal = prevBal = botBal = 1000;
+    highestEarning = correct = wrong = lastKey = 0;
     prediction = Math.floor(Math.random() * 2);
-    lastKey = 0;
     gramBuffer = [0, 1, 0, 1, 0];
     historyIndex = gramBuffer[0] * 16 + gramBuffer[1] * 8 + gramBuffer[2] * 4 + gramBuffer[3] * 2 + gramBuffer[4];
 
     for (let i = 0; i < 32; i++) { gramHistory[i] = { counter0: 0, counter1: 0 }; }
-    updateUI();
-    // Reset chart
-    updateChart(0, playerBal);
+    updateUI()
+    updateChart(0, playerBal); // Reset chart
 
     // Enable buttons
     $("#left").removeClass("hide");

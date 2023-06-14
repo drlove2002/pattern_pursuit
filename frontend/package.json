@@ -8,7 +8,7 @@
     "build:sass": "sass  --no-source-map src/app/scss/style.scss:static/css/style.css src/app/scss/index.scss:static/css/index.css --style=compressed",
     "build:css": "postcss static/css/*.css -u autoprefixer cssnano -r --no-map",
     "build:js": "npx webpack",
-    "copy:assets": "copyfiles -u 1 ./src/assets/** static",
+    "copy:assets": "copyfiles -u 1 ./src/assets/**/* static",
     "copy:html": "copyfiles -u 1 ./src/*.html static",
     "copy": "npm-run-all --parallel copy:*",
     "watch:assets": "onchange \"./src/assets/**\" -- npm run copy:assets",

@@ -3,8 +3,8 @@
 #score {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    align-items: flex-start;
+    justify-content: flex-end;
+    align-items: center;
 
     .inner-score {
         display: flex;
@@ -40,5 +40,54 @@
 
     .card-body {
         font-size: rem(15);
+    }
+
+    #bot-gif {
+        width: 80%;
+    }
+
+    #message-container {
+        position: absolute;
+        top: 67px;
+        transform: translateY(-50%);
+        transform-origin: bottom;
+        background-color: #ffffffc7;
+        border-radius: 20px;
+        padding: 10px 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        font-size: 14px;
+        font-weight: bold;
+        z-index: 2;
+        margin-inline: 10px;
+
+        &::before {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 8px;
+            border-style: solid;
+            border-color: #ffffffc7 transparent transparent transparent;
+        }
+
+
+        #message {
+            margin-right: 10px;
+            white-space: pre-wrap;
+
+            &::after {
+                content: "|";
+                animation: blink 1s infinite;
+                margin-left: 2px;
+            }
+        }
+
+        @keyframes blink {
+            50% {
+                opacity: 0;
+            }
+        }
+
     }
 }
