@@ -69,5 +69,5 @@ sudo docker run --net=host --rm www
 
 Run in detached mode:
 ```bash
-sudo docker run --restart unless-stopped -d -it --name bot --net=host www
+sudo docker run --restart unless-stopped -d -it --name www --net=host www
 ```
