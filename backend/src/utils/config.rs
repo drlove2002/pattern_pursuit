@@ -1,5 +1,6 @@
 #[derive(Debug, Clone)]
 pub struct AppConfig {
+    pub port: u16,
     pub client_origin: String,
     pub jwt_secret: String,
     pub reids_cache_ttl: usize,
@@ -11,6 +12,10 @@ pub struct AppConfig {
 
 impl AppConfig {
     pub fn init(log: &slog::Logger) -> AppConfig {
+        let port = match std::env::var("PORT") {
+            Ok(port) => port.parse::<u16>().unwrap(),
+            Err(_) => 3000,
+        };
         let client_origin = std::env::var("CLIENT_ORIGIN").expect("CLIENT_ORIGIN must be set");
         let jwt_secret = std::env::var("JWT_SECRET").expect("JWT_SECRET must be set");
         let reids_cache_ttl: usize = 60 * 60; // 1 hour
@@ -24,6 +29,7 @@ impl AppConfig {
 
         slog::info!(log, "✅ App config initialized successfully");
         AppConfig {
+            port,
             client_origin,
             jwt_secret,
             reids_cache_ttl,

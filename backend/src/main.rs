@@ -22,6 +22,8 @@ async fn main() -> std::io::Result<()> {
 
     let app_data = web::Data::new(AppState::init().await);
 
+    let port = app_data.config.port;
+
     info!(app_data.log, "🚀 Server started successfully");
 
     HttpServer::new(move || {
@@ -41,7 +43,7 @@ async fn main() -> std::io::Result<()> {
             .wrap(cors)
             .wrap(Logger::new("%r %s %b %{Referer}i %T").log_target("actix_web"))
     })
-    .bind(("localhost", 3000))?
+    .bind(("0.0.0.0", port))?
     .run()
     .await
 }
