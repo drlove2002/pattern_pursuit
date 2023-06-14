@@ -9,6 +9,7 @@ use actix_web::middleware::Logger;
 use actix_web::{http::header, web, App, HttpServer};
 use dotenv::dotenv;
 use model::AppState;
+use openssl::ssl::{SslAcceptor, SslFiletype, SslMethod};
 use slog::info;
 
 #[actix_web::main]
@@ -23,6 +24,11 @@ async fn main() -> std::io::Result<()> {
     let app_data = web::Data::new(AppState::init().await);
 
     let port = app_data.config.port;
+    let mut builder = SslAcceptor::mozilla_intermediate(SslMethod::tls()).unwrap();
+    builder
+        .set_private_key_file("key.pem", SslFiletype::PEM)
+        .unwrap();
+    builder.set_certificate_chain_file("cert.pem").unwrap();
 
     info!(app_data.log, "🚀 Server started successfully");
 
@@ -43,7 +49,7 @@ async fn main() -> std::io::Result<()> {
             .wrap(cors)
             .wrap(Logger::new("%r %s %b %{Referer}i %T").log_target("actix_web"))
     })
-    .bind(("0.0.0.0", port))?
+    .bind_openssl(("0.0.0.0", port), builder)?
     .run()
     .await
 }

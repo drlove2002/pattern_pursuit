@@ -18,10 +18,10 @@ RUN npm install && npm run build
 FROM gcr.io/distroless/cc-debian11
 
 # Copy .env file from backend
-COPY --from=rust-builder /app/backend/.env /app/backend/.env
-
-# Copy compiled Rust code
-COPY --from=rust-builder /app/backend/target/release/pattern_pursuit /app/backend/pattern_pursuit
+COPY --from=rust-builder \
+    /app/backend/.env /app/backend/target/release/pattern_pursuit \
+    /app/backend/*.pem \
+    /app/backend/
 
 # Copy built front-end files
 COPY --from=frontend-builder /app/frontend/static /app/frontend/static
