@@ -80,6 +80,10 @@ select {
 body {
   padding: 0;
   font-family: var(--font-martel);
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 #video-background {
