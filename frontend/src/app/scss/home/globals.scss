@@ -3,11 +3,13 @@
 @font-face {
     font-family: OS_400;
     src: url(../assets/fonts/OpenSauceSans-Regular.ttf);
+    font-display: swap;
 }
 
 @font-face {
     font-family: OS_500;
     src: url(../assets/fonts/OpenSauceSans-SemiBold.ttf);
+    font-display: swap;
 }
 
 @property --gradient-angle {
