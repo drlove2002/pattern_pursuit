@@ -14,7 +14,8 @@ div.hero__img {
     left: 50%;
     translate: -50% -50%;
     z-index: -1;
-    & > img {
+
+    &>video {
         aspect-ratio: unset;
         width: 40vw;
 
@@ -24,7 +25,7 @@ div.hero__img {
     }
 }
 
-body > a#skip__btn {
+body>a#skip__btn {
     display: flex;
     align-items: center;
     gap: 1rem;
@@ -40,7 +41,7 @@ body > a#skip__btn {
     letter-spacing: 4px;
     z-index: 1;
 
-    & > img {
+    &>img {
         aspect-ratio: 1 / 1;
         height: 1.8rem;
     }
@@ -64,8 +65,8 @@ main#main {
             display: grid;
             place-items: center;
 
-            & > div.hero__container {
-                & > .hero__text__container > h1 {
+            &>div.hero__container {
+                &>.hero__text__container>h1 {
                     text-align: center;
                     line-height: 1;
                     font-family: OS_400;
@@ -83,11 +84,11 @@ main#main {
             place-items: center;
             padding: 2rem;
 
-            & > div.text__container {
+            &>div.text__container {
                 width: 75%;
                 text-align: center;
 
-                & > span {
+                &>span {
                     font-family: OS_400;
                     font-weight: 300;
                     font-size: 2.4vw;
@@ -99,7 +100,7 @@ main#main {
                 }
             }
 
-            & > img {
+            &>video {
                 position: absolute;
                 aspect-ratio: unset;
                 width: 11vw;
@@ -117,7 +118,7 @@ main#main {
             }
         }
 
-        &:nth-child(4) > img {
+        &:nth-child(4)>img {
             width: 8.8vw;
         }
 
@@ -125,11 +126,11 @@ main#main {
             display: grid;
             place-items: center;
 
-            & > div.hero__container {
+            &>div.hero__container {
                 width: 75%;
                 text-align: center;
 
-                & > span {
+                &>span {
                     display: inline-block;
                     position: relative;
                     font-size: 5vw;
@@ -146,7 +147,7 @@ main#main {
             padding: 4rem 5rem;
             gap: 2rem;
 
-            & > div.left__container {
+            &>div.left__container {
                 display: flex;
                 flex-direction: column;
                 align-items: flex-start;
@@ -155,7 +156,7 @@ main#main {
                 padding: 0 2rem;
             }
 
-            & > div.left__container > div.top__container {
+            &>div.left__container>div.top__container {
                 grid-area: LT;
                 display: flex;
                 padding: 0 2rem;
@@ -164,13 +165,13 @@ main#main {
                 justify-content: center;
                 gap: 2rem;
 
-                & > span:first-child {
+                &>span:first-child {
                     font-size: 4vw;
                     font-weight: 600;
                     font-family: OS_500;
                 }
 
-                & > span:last-child {
+                &>span:last-child {
                     font-size: 2vw;
                     font-family: OS_400;
                     font-weight: 600;
@@ -178,11 +179,11 @@ main#main {
                 }
             }
 
-            & > div.left__container > div.bottom__container {
+            &>div.left__container>div.bottom__container {
                 grid-area: LB;
                 padding: 2rem;
 
-                & > div.btn > a {
+                &>div.btn>a {
                     text-decoration: none;
                     color: white;
                     background-color: #06002e;
@@ -196,42 +197,40 @@ main#main {
                     cursor: pointer;
                     position: relative;
                     border-radius: .5rem;
-                    
-                    & > span {
+
+                    &>span {
                         font-size: 1.5vw;
                         font-weight: 600;
                         font-family: OS_500;
                         text-transform: uppercase;
                         letter-spacing: 2px;
                     }
-                    
-                    & > img {
+
+                    &>img {
                         aspect-ratio: 1 / 1;
                         height: 1.6rem;
                     }
-                    
+
                     &::before,
                     &::after {
                         content: "";
                         position: absolute;
                         inset: -1px;
                         border-radius: inherit;
-                        background: conic-gradient(
-                            from var(--gradient-angle),
-                            var(--clr-1),
-                            var(--clr-2),
-                            var(--clr-3),
-                            var(--clr-2),
-                            var(--clr-1)
-                            );
-                            animation: rotation 10s linear infinite;
-                            z-index: -1;
-                        }
-                        
-                        &::after {
-                            transition: all .5s ease;
-                            filter: blur(1rem);
-                        }
+                        background: conic-gradient(from var(--gradient-angle),
+                                var(--clr-1),
+                                var(--clr-2),
+                                var(--clr-3),
+                                var(--clr-2),
+                                var(--clr-1));
+                        animation: rotation 10s linear infinite;
+                        z-index: -1;
+                    }
+
+                    &::after {
+                        transition: all .5s ease;
+                        filter: blur(1rem);
+                    }
 
                     &:hover {
                         &::after {
@@ -241,7 +240,7 @@ main#main {
                 }
             }
 
-            & > div.img__container {
+            &>div.img__container {
                 grid-area: RF;
                 position: relative;
                 display: flex;
@@ -249,7 +248,7 @@ main#main {
                 align-items: center;
                 justify-content: center;
 
-                & > img {
+                &>video {
                     &:first-child {
                         position: absolute;
                         z-index: 2;
@@ -258,6 +257,7 @@ main#main {
                         width: 10vw;
                         rotate: -235deg;
                     }
+
                     &:last-child {
                         position: inherit;
                         z-index: 3;
