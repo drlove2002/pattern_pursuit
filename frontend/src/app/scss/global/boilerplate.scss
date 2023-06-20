@@ -79,6 +79,9 @@ select {
 
 body {
   padding: 0;
+  background: linear-gradient(253deg, #14a0aa, #6a13be, #06002e);
+  background-size: 300% 300%;
+  animation: Background 25s ease infinite;
   font-family: var(--font-martel);
 
   &::-webkit-scrollbar {
@@ -86,44 +89,31 @@ body {
   }
 }
 
-#video-background {
+@keyframes Background {
+
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+
+#full-screen {
   position: fixed;
   top: 0;
+  right: 0;
+  bottom: 0;
   left: 0;
+  background: url(../../../assets/icons/bg-pattern.png);
+  background-size: cover;
+  background-position: center;
   width: 100%;
   height: 100%;
   z-index: -1;
-
-  video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-}
-
-@media (min-aspect-ratio: 16/9) {
-  video {
-    width: 100%;
-    height: auto;
-  }
-}
-
-@media (max-aspect-ratio: 16/9) {
-  video {
-    width: auto;
-    height: 100%;
-  }
-}
-
-@include breakpoint-down(small) {
-  video {
-    display: none;
-  }
-
-  body {
-    background: url(../../../assets/icons/background.webp);
-    background-size: cover;
-  }
 }
 
 .disable-select {
