@@ -79,8 +79,7 @@ $toggleColor: var(--glass-gray-1);
         position: absolute;
         top: 0;
         left: 0;
-        min-width: 200px;
-        width: 100%;
+        width: 200px;
         height: 100vh;
         z-index: 1;
         transition: transform .3s ease;
@@ -115,7 +114,6 @@ $toggleColor: var(--glass-gray-1);
 
         .nav-items {
             position: fixed;
-            width: auto;
             transform: none;
         }
     }
@@ -125,8 +123,7 @@ $toggleColor: var(--glass-gray-1);
         display: flex;
         flex-direction: row;
         gap: 0 10px;
-        background: var(--glass-colour);
-        backdrop-filter: blur(10px);
+        background: rgba(255, 255, 255, 0.5);
 
         #profile-picture {
             display: inline-block;
@@ -144,11 +141,14 @@ $toggleColor: var(--glass-gray-1);
             #profile-name {
                 font-size: 15px;
                 font-weight: 600;
+                overflow-wrap: break-word;
+                word-wrap: break-word;
             }
 
             #profile-email {
                 font-size: 10px;
                 font-weight: 400;
+                word-wrap: break-word;
             }
         }
     }
