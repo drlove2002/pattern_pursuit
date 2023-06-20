@@ -19,7 +19,6 @@
 }
 
 :root {
-    color-scheme: light dark;
     color: rgba(255, 255, 255, 0.87);
     background-color: #06002e;
 
@@ -64,12 +63,4 @@ body {
 .pop {
     opacity: 1 !important;
     translate: 0 0 !important;
-}
-
-
-@media (prefers-color-scheme: light) {
-    :root {
-        color: #06002e;
-        background-color: #ffffff;
-    }
 }
