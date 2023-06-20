@@ -1,0 +1,46 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - '**'
+    tags-ignore:
+      - 'v*'
+  pull_request:
+    types: [opened, reopened]
+    branches:
+      - master
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  test:
+    if: github.ref_name == 'master' || contains(github.event.head_commit.message, '[run-test]')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run tests
+        run: cd backend && cargo test --verbose
+
+  build:
+    if: github.event_name == 'push' && github.ref_name == 'master' && !contains(github.event.head_commit.message, 'python-semantic-release')
+    needs: test
+    runs-on: ubuntu-latest
+    concurrency:
+      group: build
+      cancel-in-progress: true
+
+    steps:
+      - name: Deploy to cloud 🚀
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            git -C /home/${{ secrets.SSH_USER }}/www pull origin master
+            sudo docker builder build /home/${{ secrets.SSH_USER }}/www/ --tag www:latest
+            sudo docker rm www -f
+            sudo docker run --restart unless-stopped -d -it --name www --net=host www
+            sudo docker rmi -f $(sudo docker images -f "dangling=true" -q)
