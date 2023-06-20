@@ -31,14 +31,18 @@ async fn leaderboard_handler(
     let mut conn = data.redis.get_conn_async();
 
     // Get top 5 users from the leaderboard
-    let top_5: RedisResult<Vec<String>> = conn.zrevrange("leaderboard", 0, 4).await;
+    let top_5: RedisResult<Vec<(String, u32)>> =
+        conn.zrevrange_withscores("leaderboard", 0, 4).await;
 
     // Get the user's position
     let user_position: RedisResult<Option<u32>> = conn
         .zrevrank("leaderboard", auth_guard.user_id.to_owned())
         .await;
+    let user_rating: RedisResult<Option<u32>> = conn
+        .zscore("leaderboard", auth_guard.user_id.to_owned())
+        .await;
 
-    if top_5.is_err() || user_position.is_err() {
+    if top_5.is_err() || user_position.is_err() || user_rating.is_err() {
         error!(data.log, "Redis error"; "error" => top_5.err().unwrap().to_string());
         return HttpResponse::InternalServerError().json(ResponseMsg {
             status: "error".to_string(),
@@ -47,12 +51,12 @@ async fn leaderboard_handler(
     }
 
     let mut user_ids = top_5.unwrap();
-    user_ids.push(auth_guard.user_id.to_owned());
+    user_ids.push((auth_guard.user_id.to_owned(), user_rating.unwrap().unwrap()));
     let user_position = user_position.unwrap();
     let mut users: Vec<LbResponse> = Vec::new();
 
     let mut rank: u32 = 1;
-    for user_id in user_ids {
+    for (user_id, rating) in user_ids {
         if user_id == auth_guard.user_id {
             rank = user_position.unwrap() + 1;
         }
@@ -71,6 +75,7 @@ async fn leaderboard_handler(
             Ok(user_data) => {
                 let user = LbResponse {
                     rank,
+                    rating,
                     name: profile.name,
                     pfp: profile.picture,
                     accuracy: user_data[0],
@@ -112,7 +117,7 @@ async fn upload_leaderboard_handler(
         "Leaderboard data";
         "user_id" => &user_id,
         "accuracy" => body.accuracy,
-        "highscore" => body.highscore,
+        "highscore" => body.highest_earning,
         "steps" => body.steps
     );
     // Upload name accurecy and highscore to the permanet user data
@@ -121,17 +126,17 @@ async fn upload_leaderboard_handler(
             format!("user:{}", user_id.to_owned()),
             &[
                 ("accuracy", body.accuracy.to_string()),
-                ("highscore", body.highscore.to_string()),
+                ("highscore", body.highest_earning.to_string()),
                 ("steps", body.steps.to_string()),
             ],
         )
         .await;
 
     // Calculate the new leaderboard score
-    let score = match body.highscore {
+    let rating = match body.highest_earning {
         hs if hs < 1000 => 100 - body.accuracy + body.steps,
-        2000 => body.highscore + (100 - body.accuracy) + body.steps,
-        _ => (body.highscore - 1000) + (100 - body.accuracy) + body.steps,
+        2000 => body.highest_earning + (100 - body.accuracy) + body.steps,
+        _ => (body.highest_earning - 1000) + (100 - body.accuracy) + body.steps,
     };
 
     // Get the previous score and compare it with the new score
@@ -144,7 +149,7 @@ async fn upload_leaderboard_handler(
         });
     }
     let prev_score = prev_score.unwrap();
-    if prev_score.is_some() && (prev_score.unwrap() > score) {
+    if prev_score.is_some() && (prev_score.unwrap() > rating) {
         return HttpResponse::Ok().json(ResponseMsg {
             status: "success".to_string(),
             message: "Leaderboard updated".to_string(),
@@ -152,7 +157,7 @@ async fn upload_leaderboard_handler(
     }
 
     // Upload the new score to the leaderboard
-    let result: RedisResult<usize> = conn.zadd("leaderboard", user_id.to_owned(), score).await;
+    let result: RedisResult<usize> = conn.zadd("leaderboard", user_id.to_owned(), rating).await;
     match result {
         Ok(_) => HttpResponse::Ok().json(ResponseMsg {
             status: "success".to_string(),

@@ -123,7 +123,7 @@ function onGameOver() {
         url: "/api/leaderboard",
         type: "POST",
         data: JSON.stringify({
-            "highscore": highestEarning,
+            "highest_earning": highestEarning,
             "accuracy": Math.round(correct / (step + 0.0001) * 100),
             "steps": step,
         }),

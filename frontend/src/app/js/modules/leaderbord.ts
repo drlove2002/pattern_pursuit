@@ -3,6 +3,7 @@ export type Leaderboard = {
     rank: number,
     name: string,
     pfp: string,
+    rating: number,
     highscore: number,
     accuracy: number
     steps: number
@@ -25,6 +26,7 @@ function getLeaderbordData(): Promise<Leaderboard[]> {
                         rank: data[i].rank,
                         name: data[i].name,
                         pfp: data[i].pfp,
+                        rating: data[i].rating,
                         highscore: data[i].highscore,
                         accuracy: data[i].accuracy,
                         steps: data[i].steps
@@ -48,6 +50,7 @@ function createLeaderboardTableHeader(): string {
         <th></th>
         <th></th>
         <th>Name</th>
+        <th>Rating</th>
         <th>Highest Earning</th>
         <th>Bot Accuracy</th>
         <th>Steps Survived</th>
@@ -67,6 +70,7 @@ function createLeaderboardTable(leaderboard: Leaderboard[]): string {
             <td class="lb-rank">${leaderboard[i].rank}</td>
             <td><img src="${leaderboard[i].pfp}" alt="Profile picture"></td>
             <td>${leaderboard[i].name}</td>
+            <td>${leaderboard[i].rating}</td>
             <td>${leaderboard[i].highscore}$</td>
             <td>${leaderboard[i].accuracy}%</td>
             <td>${leaderboard[i].steps}</td>
