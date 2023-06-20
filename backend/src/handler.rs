@@ -128,10 +128,10 @@ async fn upload_leaderboard_handler(
         .await;
 
     // Calculate the new leaderboard score
-    let score = if body.highscore < 1000 {
-        100 - body.accuracy + body.steps
-    } else {
-        (body.highscore - 1000) + (100 - body.accuracy) + body.steps
+    let score = match body.highscore {
+        hs if hs < 1000 => 100 - body.accuracy + body.steps,
+        2000 => body.highscore + (100 - body.accuracy) + body.steps,
+        _ => (body.highscore - 1000) + (100 - body.accuracy) + body.steps,
     };
 
     // Get the previous score and compare it with the new score
