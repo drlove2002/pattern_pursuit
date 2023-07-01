@@ -79,9 +79,6 @@ select {
 
 body {
   padding: 0;
-  background: linear-gradient(253deg, #14a0aa, #6a13be, #06002e);
-  background-size: 300% 300%;
-  animation: Background 25s ease infinite;
   font-family: var(--font-martel);
 
   &::-webkit-scrollbar {
@@ -89,26 +86,13 @@ body {
   }
 }
 
-@keyframes Background {
-
-  0%,
-  100% {
-    background-position: 0% 50%;
-  }
-
-  50% {
-    background-position: 100% 50%;
-  }
-}
-
-
 #full-screen {
   position: fixed;
   top: 0;
   right: 0;
   bottom: 0;
   left: 0;
-  background: url(../../../assets/icons/bg-pattern.png);
+  background: url(../../../assets/icons/Artboard.webp);
   background-size: cover;
   background-position: center;
   width: 100%;

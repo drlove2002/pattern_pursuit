@@ -88,7 +88,7 @@ function createLeaderboardTable(leaderboard: Leaderboard[]): string {
 // Create leaderboard table string
 // Stop loading animation
 // Add leaderboard table string to leaderboard table
-export function createLeaderboard() {
+export function genLeaderboard() {
     // Get leaderboard table
     const leaderboardTable = $(".leaderboard");
     // Start loading animation

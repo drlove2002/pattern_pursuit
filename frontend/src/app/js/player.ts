@@ -12,7 +12,7 @@ var historyIndex = gramBuffer[0] * 16 + gramBuffer[1] * 8 + gramBuffer[2] * 4 + 
 var correct = 0; // total number of correct guesses
 var wrong = 0; // total number of wrong guesses
 var prediction = Math.floor(Math.random() * 2); // current prediction (encoded as 0 or 1)
-var lastKey = 0; // last typed key (encoded as 0 or 1)
+var lastChoice = 0; // last typed key (encoded as 0 or 1)
 
 const getStep = () => (correct + wrong);
 
@@ -26,8 +26,8 @@ $(function () {
 });
 
 export function handleUserInput(buttonId: string) {
-    lastKey = getChoiceAsNum(buttonId);
-    if (prediction == lastKey) {
+    lastChoice = getChoiceAsNum(buttonId);
+    if (prediction == lastChoice) {
         playerBal -= winReward;
         correct++;
         botBal += winReward;
@@ -45,11 +45,11 @@ export function handleUserInput(buttonId: string) {
     updateUI();
 
     // update the 5-gram history
-    gramHistory[historyIndex].counter0 += (1 - lastKey);
-    gramHistory[historyIndex].counter1 += lastKey;
+    gramHistory[historyIndex].counter0 += (1 - lastChoice);
+    gramHistory[historyIndex].counter1 += lastChoice;
 
     // update the 5-gram buffer
-    gramBuffer.push(lastKey);
+    gramBuffer.push(lastChoice);
     gramBuffer.shift();
 
     // update chart data
@@ -136,7 +136,7 @@ function onGameOver() {
 export function handleRestart() {
     // Reset variables
     playerBal = prevBal = botBal = 1000;
-    highestEarning = correct = wrong = lastKey = 0;
+    highestEarning = correct = wrong = lastChoice = 0;
     prediction = Math.floor(Math.random() * 2);
     gramBuffer = [0, 1, 0, 1, 0];
     historyIndex = gramBuffer[0] * 16 + gramBuffer[1] * 8 + gramBuffer[2] * 4 + gramBuffer[3] * 2 + gramBuffer[4];

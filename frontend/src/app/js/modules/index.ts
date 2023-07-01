@@ -1,1 +1,1 @@
-export { createLeaderboard } from './leaderbord';
+export { genLeaderboard } from './leaderbord';

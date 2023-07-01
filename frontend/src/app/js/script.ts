@@ -2,7 +2,7 @@ import Cookies from 'js-cookie';
 import { initRefreshTimer, setProfile } from './utils';
 import { plotInit } from './plot';
 import { handleUserInput, handleRestart, eventLeftRightButton } from './player';
-import { createLeaderboard } from './modules';
+import { genLeaderboard } from './modules';
 
 const popup = $("#popup-window");
 const nav = $(".nav-container");
@@ -75,7 +75,7 @@ $(function () {
                 // Set popup content to empty leaderboard table with #leaderboard-table
                 popupContent = "<table class='leaderboard'></table>";
                 openPopup(popupContent);
-                createLeaderboard();
+                genLeaderboard();
                 return;
 
             default:
