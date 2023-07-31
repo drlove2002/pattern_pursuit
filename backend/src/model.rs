@@ -60,7 +60,7 @@ pub struct UserResponse {
 
 #[derive(Serialize, Debug)]
 pub struct LbResponse {
-    pub rank: u32,
+    pub rank: u8,
     pub rating: u32,
     pub name: String,
     pub pfp: String,

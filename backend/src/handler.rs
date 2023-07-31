@@ -34,32 +34,35 @@ async fn leaderboard_handler(
     let top_5: RedisResult<Vec<(String, u32)>> =
         conn.zrevrange_withscores("leaderboard", 0, 4).await;
 
-    // Get the user's position
-    let user_position: RedisResult<Option<u32>> = conn
-        .zrevrank("leaderboard", auth_guard.user_id.to_owned())
-        .await;
-    let user_rating: RedisResult<Option<u32>> = conn
-        .zscore("leaderboard", auth_guard.user_id.to_owned())
-        .await;
-
-    if top_5.is_err() || user_position.is_err() || user_rating.is_err() {
-        error!(data.log, "Redis error"; "error" => top_5.err().unwrap().to_string());
-        return HttpResponse::InternalServerError().json(ResponseMsg {
-            status: "error".to_string(),
-            message: "Internal server error".to_string(),
-        });
+    // Iterate over the top 5 users and add the user's position
+    let mut user_ids: Vec<(String, u32, u8)> = Vec::new();
+    {
+        let mut i_am_in_top_5 = false;
+        let mut rank: u8 = 1;
+        for (user_id, rating) in top_5.unwrap() {
+            if user_id == auth_guard.user_id {
+                i_am_in_top_5 = true;
+            }
+            user_ids.push((user_id, rating, rank));
+            rank += 1;
+        }
+        if !i_am_in_top_5 {
+            let user_position: RedisResult<Option<u32>> = conn
+                .zrevrank("leaderboard", auth_guard.user_id.to_owned())
+                .await;
+            let user_rating: RedisResult<Option<u32>> = conn
+                .zscore("leaderboard", auth_guard.user_id.to_owned())
+                .await;
+            user_ids.push((
+                auth_guard.user_id.to_owned(),
+                user_rating.unwrap().unwrap(),
+                user_position.unwrap().unwrap() as u8,
+            ));
+        }
     }
-
-    let mut user_ids = top_5.unwrap();
-    user_ids.push((auth_guard.user_id.to_owned(), user_rating.unwrap().unwrap()));
-    let user_position = user_position.unwrap();
     let mut users: Vec<LbResponse> = Vec::new();
 
-    let mut rank: u32 = 1;
-    for (user_id, rating) in user_ids {
-        if user_id == auth_guard.user_id {
-            rank = user_position.unwrap() + 1;
-        }
+    for (user_id, rating, rank) in user_ids {
         let user_data: RedisResult<Vec<u32>> = conn
             .hget(
                 format!("user:{}", user_id),
@@ -83,7 +86,6 @@ async fn leaderboard_handler(
                     steps: user_data[2],
                 };
                 users.push(user);
-                rank += 1;
             }
             Err(e) => {
                 error!(data.log, "Redis error"; "error" => e.to_string());
