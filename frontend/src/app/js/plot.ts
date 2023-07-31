@@ -10,7 +10,7 @@ function createTrace() {
         x: [0],
         y: [playerBal],
         mode: 'lines',
-        name: `Round-${round}`,
+        name: `Round-${round + 1}`,
     };
 }
 
